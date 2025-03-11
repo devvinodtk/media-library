@@ -290,29 +290,31 @@
                 {/if}
               </TableBodyCell>
               <TableBodyCell>
-                <button
-                  onclick={() => {
-                    openModal = true;
-                    itemToEdit = item;
-                    modalHeading = "Edit Folder";
-                    currentForm = "manage-folder";
-                  }}
-                  class="font-medium mr-2 text-primary-600 hover:underline dark:text-primary-500"
-                  ><EditOutline /></button
-                >
+                {#if item.id !== 1}
+                  <button
+                    onclick={() => {
+                      openModal = true;
+                      itemToEdit = item;
+                      modalHeading = "Edit Folder";
+                      currentForm = "manage-folder";
+                    }}
+                    class="font-medium mr-2 text-primary-600 hover:underline dark:text-primary-500"
+                    ><EditOutline /></button
+                  >
 
-                <button
-                  id={`delete_${item.id}`}
-                  title="Delete"
-                  onclick={() => {
-                    openModal = true;
-                    modalHeading = "Delete Folder";
-                    currentForm = "delete-confirmation";
-                    itemToEdit = item;
-                  }}
-                  class="font-medium text-primary-600 hover:underline dark:text-primary-500"
-                  ><TrashBinOutline /></button
-                >
+                  <button
+                    id={`delete_${item.id}`}
+                    title="Delete"
+                    onclick={() => {
+                      openModal = true;
+                      modalHeading = "Delete Folder";
+                      currentForm = "delete-confirmation";
+                      itemToEdit = item;
+                    }}
+                    class="font-medium text-primary-600 hover:underline dark:text-primary-500"
+                    ><TrashBinOutline /></button
+                  >
+                {/if}
               </TableBodyCell>
             </TableBodyRow>
           {/each}

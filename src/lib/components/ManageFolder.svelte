@@ -94,24 +94,22 @@
   const folderOptions = $derived.by(() => {
     let folderOptions: { value: number; name: string }[] = [];
     if (folders) {
-      folders.filter((folder) => {
-        folder.media_type_id === $form.mediaTypeId &&
-          folderOptions.push({
-            value: folder.id,
-            name: folder.folder_path ? folder.folder_path : "",
-          });
-      });
-    }
-    if (!folderOptions.length) {
-      const mediaFolder = folders?.find(
-        (folder) => folder.folder_name === "media",
-      );
+      const mediaFolder = folders?.find((folder) => folder.id === 1);
       if (mediaFolder) {
         folderOptions.push({
           value: mediaFolder.id,
           name: mediaFolder.folder_path ? mediaFolder.folder_path : "",
         });
       }
+      folders.filter((folder) => {
+        folder.id !== 1 &&
+          folder.parent_folder_id !== $form.parentFolderId &&
+          folder.media_type_id === $form.mediaTypeId &&
+          folderOptions.push({
+            value: folder.id,
+            name: folder.folder_path ? folder.folder_path : "",
+          });
+      });
     }
     return folderOptions;
   });

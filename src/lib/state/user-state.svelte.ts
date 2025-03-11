@@ -133,7 +133,7 @@ export class UserState {
       `${new Date().getTime()}_${mediaName}.${mediaFile.name.split(".").pop()}`,
     );
     let filePath = `${this.user.id}/${folderPath}/${encodedFileName}`;
-    let thumbNailPath = `${this.user.id}/thumbNails/${folderPath}/${thumbNail.name}`;
+    let thumbNailPath = `${this.user.id}/thumbNails/${folderPath}/${new Date().getTime()}_${thumbNail.name}`;
     let [mediaResponse, thumbNailResponse] = await Promise.all([
       this.supabase.storage.from("media-lib").upload(filePath, mediaFile),
       this.supabase.storage.from("media-lib").upload(thumbNailPath, thumbNail),
@@ -199,6 +199,9 @@ export class UserState {
       .insert(insertObject)
       .eq("id", this.user.id);
 
+    if (!error) {
+      this.refreshMedia();
+    }
     return { status, error };
   }
 
@@ -212,6 +215,9 @@ export class UserState {
       .delete()
       .eq("id", mediaId);
 
+    if (!error) {
+      this.refreshMedia();
+    }
     return { status, error };
   }
 
@@ -224,6 +230,10 @@ export class UserState {
       .from("folders")
       .delete()
       .eq("id", folderId);
+
+    if (!error) {
+      this.refreshFolders();
+    }
 
     return { status, error };
   }
@@ -265,6 +275,10 @@ export class UserState {
       .update(updateObject)
       .eq("id", mediaId);
 
+    if (!error) {
+      this.refreshMedia();
+    }
+
     return { status, error };
   }
 
@@ -277,6 +291,10 @@ export class UserState {
       .from("folders")
       .insert(insertObject)
       .eq("id", this.user.id);
+
+    if (!error) {
+      this.refreshFolders();
+    }
 
     return { status, error };
   }
@@ -291,6 +309,10 @@ export class UserState {
       .update(updateObject)
       .eq("id", folderId);
 
+    if (!error) {
+      this.refreshFolders();
+    }
+
     return { status, error };
   }
 
@@ -298,6 +320,33 @@ export class UserState {
     await this.supabase?.auth.signOut();
     goto("/login");
   }
+
+  refreshMedia = async () => {
+    if (!this.supabase || !this.user) {
+      return;
+    }
+
+    const { data, error } = await this.supabase.from("media").select("*");
+
+    if (error) {
+      console.log("Error fetching the media:", error.message);
+      return;
+    }
+
+    this.media = data;
+  };
+
+  refreshFolders = async () => {
+    if (!this.supabase || !this.user) {
+      return;
+    }
+
+    const { data, error } = await this.supabase.from("folders").select("*");
+
+    if (data && data.length) {
+      this.folders = generateFolderPaths(data);
+    }
+  };
 
   getMediaPublicUrl(filePath: string) {
     if (!this.supabase || !this.user) {
