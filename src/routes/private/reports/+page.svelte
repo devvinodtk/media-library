@@ -20,7 +20,6 @@
     type Folder,
     type Media,
   } from "$lib/state/user-state.svelte";
-  import { Modal } from "$components";
   let userContext = getUserState();
   let openModal = $state(false);
   let modalHeading = $state<string>("");
@@ -196,6 +195,3 @@
     {/if}
   </Table>
 </main>
-
-<Modal bind:open={openModal} item={itemToEdit} {currentForm} {modalHeading}
-></Modal>

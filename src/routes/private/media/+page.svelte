@@ -417,5 +417,9 @@
   </div>
 </main>
 
-<Modal bind:open={openModal} item={itemToEdit} {currentForm} {modalHeading}
+<Modal
+  bind:open={openModal}
+  item={itemToEdit as Media}
+  {currentForm}
+  {modalHeading}
 ></Modal>

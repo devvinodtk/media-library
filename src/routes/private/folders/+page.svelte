@@ -367,5 +367,9 @@
   </div>
 </main>
 
-<Modal bind:open={openModal} item={itemToEdit} {currentForm} {modalHeading}
+<Modal
+  bind:open={openModal}
+  item={itemToEdit as Folder}
+  {currentForm}
+  {modalHeading}
 ></Modal>
