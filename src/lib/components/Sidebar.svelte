@@ -27,9 +27,9 @@
     { name: "Reports", icon: RectangleListOutline, href: "/private/reports" },
   ];
   let iconClass =
-    "flex-shrink-0 w-6 h-6 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white";
+    "flex-shrink-0 w-6 h-6 mx-3 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white";
   let itemClass =
-    "flex items-center p-2 text-base text-gray-900 transition duration-75 rounded-lg hover:bg-gray-100 group dark:text-gray-200 dark:hover:bg-gray-700";
+    "flex items-center p-2 text-base text-gray-900 transition duration-75 rounded-lg hover:bg-[#f0f4e1] group dark:text-gray-200 dark:hover:bg-[#f0f4e1]";
   let groupClass = "pt-2 space-y-2";
 </script>
 
@@ -45,8 +45,12 @@
     <nav class="divide-y divide-gray-200 dark:divide-gray-700">
       <SidebarGroup ulClass={groupClass} class="mb-3">
         {#each posts as { name, icon, href } (name)}
-          <SidebarItem label={name} {href} spanClass="ml-3" class={itemClass}>
-            <!-- svelte-ignore svelte_component_deprecated -->
+          <SidebarItem
+            label={name}
+            {href}
+            spanClass="m-2 font-thin"
+            class={itemClass}
+          >
             <svelte:component this={icon} slot="icon" class={iconClass} />
           </SidebarItem>
         {/each}

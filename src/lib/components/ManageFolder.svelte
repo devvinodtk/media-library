@@ -102,6 +102,17 @@
           });
       });
     }
+    if (!folderOptions.length) {
+      const mediaFolder = folders?.find(
+        (folder) => folder.folder_name === "media",
+      );
+      if (mediaFolder) {
+        folderOptions.push({
+          value: mediaFolder.id,
+          name: mediaFolder.folder_path ? mediaFolder.folder_path : "",
+        });
+      }
+    }
     return folderOptions;
   });
 

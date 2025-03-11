@@ -237,3 +237,32 @@ export const generatePlaceholderThumbnail = async (
     }, "image/png");
   });
 };
+
+export const getFormattedDate = (timestamp: string) => {
+  let dateObj = new Date(timestamp);
+  let formattedDate = "";
+
+  if (dateObj) {
+    formattedDate = dateObj.toLocaleDateString("en-IN", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    });
+  }
+  return formattedDate;
+};
+
+export const getFormattedTime = (timestamp: string) => {
+  let dateObj = new Date(timestamp);
+  let formattedTime = "";
+
+  if (dateObj) {
+    formattedTime = dateObj.toLocaleTimeString("en-IN", {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false, // Use 24-hour format
+    });
+  }
+  return formattedTime;
+};
