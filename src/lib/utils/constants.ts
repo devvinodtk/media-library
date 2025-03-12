@@ -39,39 +39,6 @@ export const mediaTableColumns = [
   },
 ];
 
-export const folderTableColumns = [
-  {
-    id: "folderName",
-    label: "Folder Name",
-    accessor: (item: Folder) => item.folder_name || "",
-    sortable: true,
-  },
-  {
-    id: "parentFolder",
-    label: "Parent Folder Name",
-    accessor: (item: Folder) => item.parent_folder_name,
-    sortable: true,
-  },
-  {
-    id: "mediaType",
-    label: "Media Type",
-    accessor: (item: Folder) => "Image", // Replace with actual media type when available
-    sortable: true,
-  },
-  {
-    id: "tags",
-    label: "Tags",
-    accessor: (item: Folder) => item.tag_names || "",
-    sortable: true,
-  },
-  {
-    id: "actions",
-    label: "",
-    accessor: (item: Folder) => "",
-    sortable: false,
-  },
-];
-
 export const allowedFileTypes = {
   image: {
     mimeTypes: [

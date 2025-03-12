@@ -5,6 +5,7 @@ export { default as ManageMedia } from "./ManageMedia.svelte";
 export { default as Navbar } from "./Navbar.svelte";
 export { default as Sidebar } from "./Sidebar.svelte";
 export { default as Stats } from "./Stats.svelte";
+export { default as ViewMediaFile } from "./ViewMediaFile.svelte";
 
 export { default as Button } from "./Common/Button.svelte";
 export { default as TagsComponent } from "./Common/TagsComponent.svelte";

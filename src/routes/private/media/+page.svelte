@@ -29,9 +29,9 @@
   let { media, folders } = $derived(userContext);
   let openModal = $state(false);
   let itemToEdit = $state<Media>();
-  let currentForm = $state<"manage-media" | "delete-confirmation">(
-    "manage-media",
-  );
+  let currentForm = $state<
+    "manage-media" | "view-media" | "delete-confirmation"
+  >("manage-media");
   let modalHeading = $state<string>("");
 
   const mediaTableColumns = [
@@ -50,7 +50,7 @@
     {
       id: "mediaType",
       label: "Media Type",
-      accessor: (item: Media) => "Image", // Replace with actual media type when available
+      accessor: (item: Media) => getMediaType(item.folder_id),
       sortable: true,
     },
     {
@@ -106,14 +106,18 @@
       if (filterColumn === "all") {
         return mediaTableColumns
           .filter((col) => col.id !== "thumbnail" && col.id !== "actions") // Skip non-searchable columns
-          .some((col) => col.accessor(item).toLowerCase().includes(term));
+          .some((col) => {
+            const value = col.accessor(item);
+            return value && value.toLowerCase().includes(term);
+          });
       }
 
       // Filter by specific column
       const column = mediaTableColumns.find((col) => col.id === filterColumn);
       if (!column) return true; // If column not found, don't filter
 
-      return column.accessor(item).toLowerCase().includes(term);
+      const value = column.accessor(item);
+      return value && value.toLowerCase().includes(term);
     });
   }
 
@@ -215,6 +219,13 @@
       lastFilterColumn = filterColumn;
     }
   });
+
+  const handleAvatarClick = (item: Media) => {
+    openModal = true;
+    modalHeading = "Preview Media File";
+    currentForm = "view-media";
+    itemToEdit = item;
+  };
 </script>
 
 <main class="relative h-full w-full overflow-y-auto dark:bg-gray-800 p-4">
@@ -331,7 +342,17 @@
             <TableBodyRow>
               <TableBodyCell>
                 {#if item.thumbnail}
-                  <Avatar src={item.thumbnail} />
+                  <button
+                    type="button"
+                    onclick={() => handleAvatarClick(item)}
+                    aria-label="View Media"
+                    class="p-0 border-none bg-transparent"
+                  >
+                    <Avatar
+                      src={item.thumbnail}
+                      class="w-11 h-11 min-w-[3rem]"
+                    />
+                  </button>
                 {/if}
               </TableBodyCell>
               <TableBodyCell>{item.display_name}</TableBodyCell>

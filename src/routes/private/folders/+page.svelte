@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Modal } from "$components";
-  import type { Folder } from "$lib/state/user-state.svelte";
+  import type { Folder, Media } from "$lib/state/user-state.svelte";
   import {
     Badge,
     Button,
@@ -25,9 +25,8 @@
   } from "flowbite-svelte-icons";
 
   import { getUserState } from "$lib/state/user-state.svelte";
-  import { folderTableColumns } from "$lib/utils/constants";
   let userContext = getUserState();
-  let { folders } = $derived(userContext);
+  let { folders, media } = $derived(userContext);
   let openModal = $state(false);
   let itemToEdit = $state<Folder>();
   let currentForm = $state<"manage-folder" | "delete-confirmation">(
@@ -35,6 +34,38 @@
   );
   let modalHeading = $state<string>("");
 
+  export const folderTableColumns = [
+    {
+      id: "folderName",
+      label: "Folder Name",
+      accessor: (item: Folder) => item.folder_name || "",
+      sortable: true,
+    },
+    {
+      id: "parentFolder",
+      label: "Parent Folder Name",
+      accessor: (item: Folder) => item.parent_folder_name,
+      sortable: true,
+    },
+    {
+      id: "mediaType",
+      label: "Media Type",
+      accessor: (item: Folder) => getMediaType(item.id), // Replace with actual media type when available
+      sortable: true,
+    },
+    {
+      id: "tags",
+      label: "Tags",
+      accessor: (item: Folder) => item.tag_names || "",
+      sortable: true,
+    },
+    {
+      id: "actions",
+      label: "",
+      accessor: (item: Folder) => "",
+      sortable: false,
+    },
+  ];
   // Search and filter states
   let searchTerm = $state<string>("");
   let filterColumn = $state<string>("all");
@@ -49,6 +80,13 @@
   let currentPage = $state<number>(1);
   let pageSize = $state<number>(10);
   let pageSizeOptions = [5, 10, 25, 50, 100];
+
+  $inspect(media);
+  let filesPerFolders = (folderId: number) => {
+    return media?.filter((file) => file.folder_id === folderId) ?? [];
+  };
+  const getMediaType = (folderId: number) =>
+    folders?.find((folder) => folder.id == folderId)?.media_type_name;
 
   const getFilteredFolders = () => {
     if (!folders) return [];
@@ -279,7 +317,12 @@
         <TableBody tableBodyClass="divide-y">
           {#each paginatedData as item (item)}
             <TableBodyRow>
-              <TableBodyCell>{item.folder_name}</TableBodyCell>
+              <TableBodyCell
+                >{item.folder_name}
+                {filesPerFolders(item.id).length > 0
+                  ? `(${filesPerFolders(item.id).length} Files)`
+                  : ""}
+              </TableBodyCell>
               <TableBodyCell>{item.parent_folder_name}</TableBodyCell>
               <TableBodyCell>{item.media_type_name}</TableBodyCell>
               <TableBodyCell>
@@ -303,6 +346,7 @@
                   >
 
                   <button
+                    disabled={filesPerFolders(item.id).length > 0}
                     id={`delete_${item.id}`}
                     title="Delete"
                     onclick={() => {
@@ -312,7 +356,10 @@
                       itemToEdit = item;
                     }}
                     class="font-medium text-primary-600 hover:underline dark:text-primary-500"
-                    ><TrashBinOutline /></button
+                    ><TrashBinOutline
+                      cursor={`${filesPerFolders(item.id).length > 0 ? "not-allowed" : "pointer"}`}
+                      color={`${filesPerFolders(item.id).length > 0 ? "gray" : ""}`}
+                    /></button
                   >
                 {/if}
               </TableBodyCell>

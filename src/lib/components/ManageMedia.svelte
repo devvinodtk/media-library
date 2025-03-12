@@ -11,7 +11,6 @@
     Label,
     Select,
     Textarea,
-    Spinner,
   } from "flowbite-svelte";
   import { createForm } from "svelte-forms-lib";
   import {
@@ -239,20 +238,6 @@
       folders?.find((folder) => folder.id == $form.parentFolderId)?.folder_path,
   );
 
-  // const getFolderPath = (parentFolderId: number) =>
-  //   folders?.find((folder) => folder.id == parentFolderId)?.folder_path;
-
-  // const getMediaUrl = (parentFolderId: number, mediaFileName: string) => {
-  //   const fileFolderPath = getFolderPath(parentFolderId);
-  //   if (fileFolderPath) {
-  //     const response = userContext.getMediaPublicUrl(
-  //       `${user?.id}/${fileFolderPath}/${mediaFileName}`,
-  //     );
-  //     return response?.data.publicUrl || "";
-  //   }
-  //   return "";
-  // };
-
   const handleNewMediaSave = async (values: typeof $form) => {
     if (
       fileToUpload &&
@@ -290,7 +275,6 @@
       const media: UpdatableMedia = {
         description: values.description,
         display_name: values.mediaName,
-        name: values.mediaName,
         folder_id: values.parentFolderId || 0,
         thumbnail: values.thumbnailUrl || null,
       };

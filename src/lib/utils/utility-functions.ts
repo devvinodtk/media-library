@@ -197,7 +197,6 @@ export async function generatePDFThumbnails(file: File): Promise<File | null> {
   });
 }
 
-// Create a placeholder thumbnail based on file type
 export const generatePlaceholderThumbnail = async (
   fileType: string,
 ): Promise<File> => {

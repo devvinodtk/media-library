@@ -46,7 +46,10 @@ export type Media = {
   user_id: string;
 };
 
-export type UpdatableMedia = Omit<Media, "id" | "user_id" | "created_at">;
+export type UpdatableMedia = Omit<
+  Media,
+  "id" | "user_id" | "name" | "created_at"
+>;
 
 type UpdatableFolder = Omit<
   Folder,
@@ -190,7 +193,7 @@ export class UserState {
     return response;
   }
 
-  async insertNewMedia(insertObject: Partial<UpdatableMedia>) {
+  async insertNewMedia(insertObject: Partial<Media>) {
     if (!this.supabase || !this.user) {
       return;
     }
@@ -266,7 +269,6 @@ export class UserState {
 
       if (thumbnailUrl && encodedFileName) {
         updateObject.thumbnail = thumbnailUrl.data.publicUrl;
-        updateObject.name = encodedFileName;
       }
     }
 
@@ -355,6 +357,23 @@ export class UserState {
 
     return this.supabase.storage.from("media-lib").getPublicUrl(filePath);
   }
+
+  downloadMedia = async (filePath: string) => {
+    if (!this.supabase || !this.user) {
+      return;
+    }
+
+    const { data, error } = await this.supabase.storage
+      .from("media-lib")
+      .download(filePath);
+
+    if (error) {
+      console.error(`Error downloading ${filePath}:`, error);
+      return null;
+    }
+
+    return { data };
+  };
 }
 
 // Ensure uniqueness of the instance

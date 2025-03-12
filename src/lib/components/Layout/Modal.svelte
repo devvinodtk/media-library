@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { ManageFolder, ManageMedia } from "$components";
+  import { ManageFolder, ManageMedia, ViewMediaFile } from "$components";
   import type { Folder, Media } from "$lib/state/user-state.svelte";
   import { Modal } from "flowbite-svelte";
   import DeleteConfirmation from "./DeleteConfirmation.svelte";
@@ -12,7 +12,11 @@
   }: {
     open: boolean;
     modalHeading: string;
-    currentForm: "manage-media" | "manage-folder" | "delete-confirmation";
+    currentForm:
+      | "view-media"
+      | "manage-media"
+      | "manage-folder"
+      | "delete-confirmation";
     item: Folder | Media;
   } = $props();
 
@@ -30,5 +34,8 @@
   {/if}
   {#if currentForm === "delete-confirmation"}
     <DeleteConfirmation {closeModal} itemToDelete={item} />
+  {/if}
+  {#if currentForm === "view-media"}
+    <ViewMediaFile {closeModal} itemToView={item as Media} />
   {/if}
 </Modal>
