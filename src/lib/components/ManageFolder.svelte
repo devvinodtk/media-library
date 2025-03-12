@@ -1,13 +1,7 @@
 <script lang="ts">
   import { Badge, Button, Helper, Input, Label, Select } from "flowbite-svelte";
   import { createForm } from "svelte-forms-lib";
-  import { getUserState } from "$lib/state/user-state.svelte";
-
-  let userContext = getUserState();
-  const { mediaTypes, folders } = $derived(userContext);
-  let inputValue = $state<String>("");
-  let { closeModal, itemToEdit } = $props();
-  let isEditMode = $derived(!!itemToEdit);
+  import { getUserState, type Folder } from "$lib/state/user-state.svelte";
 
   type FormData = {
     folderName: string;
@@ -15,6 +9,17 @@
     parentFolderId: number | null;
     tagNames: string[];
   };
+
+  type ManageFolderProps = {
+    itemToEdit: Folder;
+    closeModal: () => void;
+  };
+
+  let userContext = getUserState();
+  const { mediaTypes, folders } = $derived(userContext);
+  let inputValue = $state<String>("");
+  let { closeModal, itemToEdit }: ManageFolderProps = $props();
+  let isEditMode = $derived(!!itemToEdit);
 
   function handleBlur(field: keyof FormData) {
     validateField(field);

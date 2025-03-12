@@ -34,7 +34,7 @@
   >("manage-media");
   let modalHeading = $state<string>("");
 
-  const mediaTableColumns = [
+  export const mediaTableColumns = [
     {
       id: "thumbnail",
       label: "",
@@ -226,6 +226,8 @@
     currentForm = "view-media";
     itemToEdit = item;
   };
+
+  $inspect(media);
 </script>
 
 <main class="relative h-full w-full overflow-y-auto dark:bg-gray-800 p-4">

@@ -18,6 +18,7 @@
 		"@tailwindcss/forms": "^0.5.9",
 		"@tailwindcss/typography": "^0.5.15",
 		"@tailwindcss/vite": "^4.0.0",
+		"@types/file-saver": "^2.0.7",
 		"flowbite": "^3.1.2",
 		"flowbite-svelte": "^0.48.4",
 		"flowbite-svelte-icons": "^2.0.2",
@@ -34,6 +35,8 @@
 		"@supabase/ssr": "^0.5.2",
 		"@supabase/supabase-js": "^2.49.1",
 		"amplify-adapter": "^0.2.0",
+		"file-saver": "^2.0.5",
+		"jszip": "^3.10.1",
 		"pdfjs-dist": "^4.10.38",
 		"svelte-file-dropzone": "^2.0.9",
 		"svelte-forms-lib": "^2.0.1"

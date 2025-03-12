@@ -1,4 +1,4 @@
-import type { Folder } from "$lib/state/user-state.svelte";
+import type { Folder, Media } from "$lib/state/user-state.svelte";
 import { getDocument, GlobalWorkerOptions } from "pdfjs-dist";
 
 // Set the worker source path
@@ -265,3 +265,37 @@ export const getFormattedTime = (timestamp: string) => {
   }
   return formattedTime;
 };
+
+export const sortedItemsBySize = (media: Media[]) =>
+  [...media].sort((a, z) => {
+    if (
+      typeof a.size === "number" &&
+      !isNaN(a.size) &&
+      typeof z.size === "number" &&
+      !isNaN(z.size)
+    ) {
+      return z.size - a.size;
+    }
+
+    if (typeof a.size === "number" && !isNaN(a.size)) {
+      return -1;
+    }
+
+    if (typeof z.size === "number" && !isNaN(z.size)) {
+      return 1;
+    }
+
+    return a.display_name.localeCompare(a.display_name);
+  });
+
+export function formatBytes(bytes: number, decimals = 2): string {
+  if (bytes === 0) return "0 Bytes";
+
+  const k = 1024;
+  const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+  return (
+    parseFloat((bytes / Math.pow(k, i)).toFixed(decimals)) + " " + sizes[i]
+  );
+}

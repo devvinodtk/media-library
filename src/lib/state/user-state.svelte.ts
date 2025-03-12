@@ -2,6 +2,9 @@ import { goto } from "$app/navigation";
 import { generateFolderPaths } from "$lib/utils/utility-functions";
 import type { Session, SupabaseClient, User } from "@supabase/supabase-js";
 import { setContext, getContext } from "svelte";
+import JSZip from "jszip";
+import pkg from "file-saver";
+const { saveAs } = pkg;
 
 interface UserStateProps {
   session: Session | null;
@@ -44,12 +47,10 @@ export type Media = {
   name: string;
   thumbnail: string | null;
   user_id: string;
+  size: number | null;
 };
 
-export type UpdatableMedia = Omit<
-  Media,
-  "id" | "user_id" | "name" | "created_at"
->;
+export type UpdatableMedia = Omit<Media, "id" | "user_id" | "created_at">;
 
 type UpdatableFolder = Omit<
   Folder,
@@ -188,6 +189,7 @@ export class UserState {
       description,
       thumbnail: thumbnailUrl?.data.publicUrl || "",
       folder_id: folderId,
+      size: mediaFile.size,
     });
 
     return response;
@@ -268,6 +270,7 @@ export class UserState {
       const { thumbnailUrl, encodedFileName } = uploadResult;
 
       if (thumbnailUrl && encodedFileName) {
+        updateObject.name = encodedFileName;
         updateObject.thumbnail = thumbnailUrl.data.publicUrl;
       }
     }
@@ -373,6 +376,51 @@ export class UserState {
     }
 
     return { data };
+  };
+
+  downloadFilesAsZip = async (filePaths: string[]) => {
+    const zip = new JSZip();
+    const downloadPromises = filePaths.map(async (filePath) => {
+      try {
+        if (!this.supabase || !this.user) {
+          return;
+        }
+        const { data, error } = await this.supabase.storage
+          .from("media-lib")
+          .download(filePath);
+
+        if (error) {
+          console.error(`Error downloading ${filePath}:`, error);
+          return null;
+        }
+
+        const fileName = filePath.split("/").pop() || filePath;
+
+        zip.file(fileName, data);
+
+        return { fileName, success: true };
+      } catch (e) {
+        console.error(`Error processing ${filePath}:`, e);
+        return { fileName: filePath, success: false, error: e };
+      }
+    });
+
+    const results = await Promise.all(downloadPromises);
+
+    const successfulDownloads = results.filter((r) => r && r.success);
+    const failedDownloads = results.filter((r) => r && !r.success);
+
+    if (successfulDownloads.length === 0) {
+      throw new Error("No files were successfully downloaded");
+    }
+
+    if (failedDownloads.length > 0) {
+      console.warn(`Failed to download ${failedDownloads.length} files`);
+    }
+
+    const zipBlob = await zip.generateAsync({ type: "blob" });
+
+    saveAs(zipBlob, `Reports_${new Date().getTime()}`);
   };
 }
 

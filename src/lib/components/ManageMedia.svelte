@@ -1,6 +1,7 @@
 <script lang="ts">
   import {
     getUserState,
+    type Media,
     type UpdatableMedia,
   } from "$lib/state/user-state.svelte";
   import {
@@ -22,28 +23,35 @@
   import DropZone from "svelte-file-dropzone";
   import { allowedFileTypes } from "$lib/utils/constants";
 
-  let userContext = getUserState();
-  const { mediaTypes, folders, user } = $derived(userContext);
-  let { closeModal, itemToEdit } = $props();
-  let isEditMode = $derived(!!itemToEdit);
-  let fileToUpload = $state<File | null>(null);
-  let thumbnailToUpload = $state<File | null>(null);
-  let errorMessage = $state<string>("");
-  let fileTypeError = $state<string>("");
-  let loading = $state(false);
-
   type FormData = {
     mediaName: string;
     description: string;
     mediaTypeId: number | null;
     parentFolderId: number | null;
-    thumbnailUrl?: string;
+    thumbnailUrl: string | null;
+    fileSize: number | null;
+    fileName: string;
   };
 
   type SelectOption = {
     value: number;
     name: string;
   };
+
+  type ManageMediaProps = {
+    itemToEdit: Media;
+    closeModal: () => void;
+  };
+
+  let userContext = getUserState();
+  const { mediaTypes, folders } = $derived(userContext);
+  let { closeModal, itemToEdit }: ManageMediaProps = $props();
+  let isEditMode = $derived(!!itemToEdit);
+  let fileToUpload = $state<File | null>(null);
+  let thumbnailToUpload = $state<File | null>(null);
+  let errorMessage = $state<string>("");
+  let fileTypeError = $state<string>("");
+  let loading = $state(false);
 
   // Get currently selected media type info
   const getSelectedMediaTypeInfo = (mediaTypeId: number | null) => {
@@ -88,12 +96,14 @@
     if (isEditMode && itemToEdit) {
       return {
         mediaName: itemToEdit.display_name,
-        description: itemToEdit.description,
+        description: itemToEdit.description || "",
         mediaTypeId:
           folders?.find((folder) => folder.id === itemToEdit.folder_id)
             ?.media_type_id || null,
         parentFolderId: itemToEdit.folder_id,
         thumbnailUrl: itemToEdit.thumbnail,
+        fileSize: itemToEdit.size,
+        fileName: itemToEdit.name,
       };
     }
     return {
@@ -101,6 +111,9 @@
       description: "",
       mediaTypeId: null,
       parentFolderId: null,
+      fileSize: null,
+      thumbnailUrl: null,
+      fileName: "",
     };
   };
 
@@ -277,6 +290,8 @@
         display_name: values.mediaName,
         folder_id: values.parentFolderId || 0,
         thumbnail: values.thumbnailUrl || null,
+        size: values.fileSize,
+        name: values.fileName,
       };
 
       const res = await userContext.updateMedia(

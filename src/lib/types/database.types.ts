@@ -58,6 +58,7 @@ export type Database = {
           folder_id: number
           id: number
           name: string
+          size: number | null
           thumbnail: string | null
           user_id: string
         }
@@ -68,6 +69,7 @@ export type Database = {
           folder_id: number
           id?: number
           name: string
+          size?: number | null
           thumbnail?: string | null
           user_id?: string
         }
@@ -78,6 +80,7 @@ export type Database = {
           folder_id?: number
           id?: number
           name?: string
+          size?: number | null
           thumbnail?: string | null
           user_id?: string
         }
