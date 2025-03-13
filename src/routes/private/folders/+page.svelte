@@ -14,14 +14,14 @@
     TableBodyRow,
     TableHead,
     TableHeadCell,
-    Toolbar,
+    Toolbar
   } from "flowbite-svelte";
   import {
     ChevronLeftOutline,
     ChevronRightOutline,
     EditOutline,
     PlusOutline,
-    TrashBinOutline,
+    TrashBinOutline
   } from "flowbite-svelte-icons";
 
   import { getUserState } from "$lib/state/user-state.svelte";
@@ -30,7 +30,7 @@
   let openModal = $state(false);
   let itemToEdit = $state<Folder>();
   let currentForm = $state<"manage-folder" | "delete-confirmation">(
-    "manage-folder",
+    "manage-folder"
   );
   let modalHeading = $state<string>("");
 
@@ -39,32 +39,32 @@
       id: "folderName",
       label: "Folder Name",
       accessor: (item: Folder) => item.folder_name || "",
-      sortable: true,
+      sortable: true
     },
     {
       id: "parentFolder",
       label: "Parent Folder Name",
       accessor: (item: Folder) => item.parent_folder_name,
-      sortable: true,
+      sortable: true
     },
     {
       id: "mediaType",
       label: "Media Type",
       accessor: (item: Folder) => getMediaType(item.id), // Replace with actual media type when available
-      sortable: true,
+      sortable: true
     },
     {
       id: "tags",
       label: "Tags",
       accessor: (item: Folder) => item.tag_names || "",
-      sortable: true,
+      sortable: true
     },
     {
       id: "actions",
       label: "",
       accessor: (item: Folder) => "",
-      sortable: false,
-    },
+      sortable: false
+    }
   ];
   // Search and filter states
   let searchTerm = $state<string>("");
@@ -81,7 +81,6 @@
   let pageSize = $state<number>(10);
   let pageSizeOptions = [5, 10, 25, 50, 100];
 
-  $inspect(media);
   let filesPerFolders = (folderId: number) => {
     return media?.filter((file) => file.folder_id === folderId) ?? [];
   };
@@ -146,19 +145,19 @@
   }
 
   const filteredAndSortedFolders = $derived.by(() =>
-    getSortedAndFilteredFolders(),
+    getSortedAndFilteredFolders()
   );
 
   const totalPages = $derived.by(() =>
-    Math.ceil(filteredAndSortedFolders.length / pageSize),
+    Math.ceil(filteredAndSortedFolders.length / pageSize)
   );
 
   const pages = $derived.by(() =>
     Array.from({ length: totalPages }, (_, i) => ({
       name: (i + 1).toString(),
       href: `#page-${i + 1}`,
-      active: i + 1 === currentPage,
-    })),
+      active: i + 1 === currentPage
+    }))
   );
 
   const paginatedData = $derived.by(() => getPaginatedData());
@@ -179,7 +178,7 @@
 
   const filterOptions = folderTableColumns
     .filter(
-      (col) => col.id !== "thumbnail" && col.id !== "actions" && col.sortable,
+      (col) => col.id !== "thumbnail" && col.id !== "actions" && col.sortable
     )
     .map((col) => ({ value: col.id, label: col.label }));
 
@@ -267,7 +266,7 @@
           Showing {filteredAndSortedFolders.length} of {folders?.length || 0} items
           {#if filterColumn !== "all"}
             | Filtering by: {folderTableColumns.find(
-              (col) => col.id === filterColumn,
+              (col) => col.id === filterColumn
             )?.label || filterColumn}
           {/if}
         {/if}
@@ -393,7 +392,7 @@
         <div class="text-sm text-gray-600 dark:text-gray-400">
           Showing {(currentPage - 1) * pageSize + 1} to {Math.min(
             currentPage * pageSize,
-            filteredAndSortedFolders.length,
+            filteredAndSortedFolders.length
           )} of {filteredAndSortedFolders.length} items
         </div>
 

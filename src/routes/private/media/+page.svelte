@@ -15,14 +15,14 @@
     TableHead,
     TableHeadCell,
     Toolbar,
-    Tooltip,
+    Tooltip
   } from "flowbite-svelte";
   import {
     EditOutline,
     PlusOutline,
     TrashBinOutline,
     ChevronLeftOutline,
-    ChevronRightOutline,
+    ChevronRightOutline
   } from "flowbite-svelte-icons";
   import { getUserState } from "$lib/state/user-state.svelte";
   let userContext = getUserState();
@@ -39,38 +39,38 @@
       id: "thumbnail",
       label: "",
       accessor: (item: Media) => item.thumbnail || "",
-      sortable: false,
+      sortable: false
     },
     {
       id: "name",
       label: "Name",
       accessor: (item: Media) => item.display_name,
-      sortable: true,
+      sortable: true
     },
     {
       id: "mediaType",
       label: "Media Type",
       accessor: (item: Media) => getMediaType(item.folder_id),
-      sortable: true,
+      sortable: true
     },
     {
       id: "folderPath",
       label: "Folder Path",
       accessor: (item: Media) => getFolderPath(item.folder_id) || "",
-      sortable: true,
+      sortable: true
     },
     {
       id: "description",
       label: "Description",
       accessor: (item: Media) => item.description || "",
-      sortable: true,
+      sortable: true
     },
     {
       id: "actions",
       label: "",
       accessor: (item: Media) => "",
-      sortable: false,
-    },
+      sortable: false
+    }
   ];
 
   // Search and filter states
@@ -155,7 +155,7 @@
   const filteredAndSortedMedia = $derived.by(() => getSortedAndFilteredMedia());
 
   const totalPages = $derived.by(() =>
-    Math.ceil(filteredAndSortedMedia.length / pageSize),
+    Math.ceil(filteredAndSortedMedia.length / pageSize)
   );
 
   // Create the pages array that Pagination component expects
@@ -163,8 +163,8 @@
     Array.from({ length: totalPages }, (_, i) => ({
       name: (i + 1).toString(),
       href: `#page-${i + 1}`,
-      active: i + 1 === currentPage,
-    })),
+      active: i + 1 === currentPage
+    }))
   );
 
   const paginatedData = $derived.by(() => getPaginatedData());
@@ -185,7 +185,7 @@
 
   const filterOptions = mediaTableColumns
     .filter(
-      (col) => col.id !== "thumbnail" && col.id !== "actions" && col.sortable,
+      (col) => col.id !== "thumbnail" && col.id !== "actions" && col.sortable
     )
     .map((col) => ({ value: col.id, label: col.label }));
 
@@ -226,8 +226,6 @@
     currentForm = "view-media";
     itemToEdit = item;
   };
-
-  $inspect(media);
 </script>
 
 <main class="relative h-full w-full overflow-y-auto dark:bg-gray-800 p-4">
@@ -292,7 +290,7 @@
           Showing {filteredAndSortedMedia.length} of {media?.length || 0} items
           {#if filterColumn !== "all"}
             | Filtering by: {mediaTableColumns.find(
-              (col) => col.id === filterColumn,
+              (col) => col.id === filterColumn
             )?.label || filterColumn}
           {/if}
         {/if}
@@ -417,7 +415,7 @@
         <div class="text-sm text-gray-600 dark:text-gray-400">
           Showing {(currentPage - 1) * pageSize + 1} to {Math.min(
             currentPage * pageSize,
-            filteredAndSortedMedia.length,
+            filteredAndSortedMedia.length
           )} of {filteredAndSortedMedia.length} items
         </div>
 

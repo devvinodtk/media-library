@@ -1,110 +1,107 @@
 <script lang="ts">
-  import { Button } from "$components";
-  import type { ActionData } from "../../../routes/register/$types";
+  import { A, Button, Card, Input, Label } from "flowbite-svelte";
+  import mediaLibraryLogo from "$assets/app-logo.svg";
+  import type { ActionData } from "../../../routes/login/$types";
 
-  interface AuthFormProps {
+  type AuthFormProps = {
     isRegistration: boolean;
     form: ActionData;
-  }
+  };
 
   let { isRegistration, form }: AuthFormProps = $props();
+  let haveAccount: boolean = true;
+  let mainClass = "w-full";
+  let mainDivClass =
+    "flex flex-col items-center justify-center px-6 pt-8 mx-auto md:h-screen pt:mt-0 dark:bg-gray-900";
+  let siteLinkClass =
+    "flex items-center justify-center mb-8 text-2xl font-semibold lg:mb-10 dark:text-white";
+  let siteImgClass = "mr-4 h-11";
+  let cardH1Class = "text-2xl font-bold text-gray-900 dark:text-white";
+  let haveAccountDivClass =
+    "text-sm font-medium text-gray-500 dark:text-gray-400";
+  const labelClass = "space-y-2 dark:text-white";
 </script>
 
-<div class="isolate px-6 py-10 sm:py-15 lg:px-8">
-  <div class="mx-auto max-w-2xl text-center">
-    <h2
-      class="text-4xl font-semibold tracking-tight text-balance text-gray-900 sm:text-5xl"
-    >
-      {isRegistration ? "Registration" : "Login"}
-    </h2>
-    {#if form && form.errors?.length}
-      {#each form.errors as error}
-        <p class="mt-2 text-lg/8 text-red-800">{error}</p>
-      {/each}
-    {/if}
-    <p class="mt-2 text-lg/8 text-gray-600"></p>
-  </div>
-  <form method="POST" class="mx-auto mt-12 max-w-xl sm:mt-15">
-    <div class="grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2">
-      {#if isRegistration}
-        <div class="sm:col-span-2">
-          <label for="name" class="block text-sm/6 font-semibold text-gray-900"
-            >Name</label
-          >
-          <div class="mt-2.5">
-            <input
-              required={true}
-              type="text"
-              name="name"
-              id="name"
-              value={form?.name || ""}
-              class="block w-full rounded-md bg-white px-3.5 py-3 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-none"
-            />
-          </div>
-        </div>
-      {/if}
-      <div class="sm:col-span-2">
-        <label for="email" class="block text-sm/6 font-semibold text-gray-900"
-          >Email</label
-        >
-        <div class="mt-2.5">
-          <input
-            required={true}
-            type="email"
-            name="email"
-            value={form?.email || ""}
-            id="email"
-            autocomplete="email"
-            class="block w-full rounded-md bg-white px-3.5 py-3 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-none"
-          />
-        </div>
-      </div>
-      <div class="sm:col-span-2">
-        <label for="company" class="block text-sm/6 font-semibold text-gray-900"
-          >Password</label
-        >
-        <div class="mt-2.5">
-          <input
-            required={true}
-            type="password"
-            name="password"
-            value={form?.password || ""}
-            id="password"
-            class="block w-full rounded-md bg-white px-3.5 py-3 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-none"
-          />
-        </div>
-      </div>
-      {#if isRegistration}
-        <div class="sm:col-span-2">
-          <label
-            for="passwordConfirmation"
-            class="block text-sm/6 font-semibold text-gray-900"
-            >Confirm Password</label
-          >
-          <div class="mt-2.5">
-            <input
-              required={true}
-              type="password"
-              value={form?.passwordConfirmation || ""}
-              name="passwordConfirmation"
-              id="passwordConfirmation"
-              class="block w-full rounded-md bg-white px-3.5 py-3 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-none"
-            />
-          </div>
-        </div>
-      {/if}
-      <div class="mt-10 sm:col-span-2">
-        <Button type="submit">{isRegistration ? "Register" : "Login"}</Button>
+<main class={mainClass}>
+  <div class={mainDivClass}>
+    <a href="/" class={siteLinkClass}>
+      <img src={mediaLibraryLogo} class={siteImgClass} alt="" />
+      <span>Media Library App</span>
+    </a>
+    <Card class="w-full" size="md" border={false}>
+      <h1 class={cardH1Class}>
+        {`${isRegistration ? "Register" : "Login"}`} to the App
+      </h1>
+      <form class="mt-8 space-y-6" method="POST">
         {#if isRegistration}
-          <p class="mt-2 text-center text-lg/8 text-gray-600">
-            Already have an account? <a href="/login">Login</a>.
-          </p>
-        {:else}
-          <p class="mt-2 text-center text-lg/8 text-gray-600">
-            Don't have an account? <a href="/register">Register</a>
-          </p>
+          <div>
+            <Label class={labelClass}>
+              <span>Name</span>
+              <Input
+                type="text"
+                name="name"
+                id="name"
+                required
+                value={form?.name || ""}
+                class="border outline-none dark:border-gray-600 dark:bg-gray-700"
+              />
+            </Label>
+          </div>
         {/if}
-      </div>
-    </div>
-  </form>
-</div>
+        <div>
+          <Label class={labelClass}>
+            <span>Your email</span>
+            <Input
+              type="email"
+              name="email"
+              id="email"
+              value={form?.email || ""}
+              required
+              class="border outline-none dark:border-gray-600 dark:bg-gray-700"
+            />
+          </Label>
+        </div>
+        <div>
+          <Label class={labelClass}>
+            <span>Your password</span>
+            <Input
+              type="password"
+              name="password"
+              id="password"
+              value={form?.password || ""}
+              required
+              class="border outline-none dark:border-gray-600 dark:bg-gray-700"
+            />
+          </Label>
+        </div>
+        {#if isRegistration}
+          <div>
+            <Label class={labelClass}>
+              <span>Confirm password</span>
+              <Input
+                type="password"
+                name="passwordConfirmation"
+                id="passwordConfirmation"
+                value={form?.passwordConfirmation || ""}
+                required
+                class="border outline-none dark:border-gray-600 dark:bg-gray-700"
+              />
+            </Label>
+          </div>
+        {/if}
+        <Button type="submit" size="lg"
+          >{isRegistration ? "Create account" : "Login to your account"}</Button
+        >
+        {#if isRegistration}
+          <div class={haveAccountDivClass}>
+            Already have an account? <A href="/login">Login here</A>
+          </div>
+        {:else}
+          <div class="text-sm font-medium text-gray-500 dark:text-gray-400">
+            Not registered? <A href="/register">Register</A>
+          </div>
+        {/if}
+      </form>
+    </Card>
+  </div>
+</main>
