@@ -21,7 +21,7 @@ export const actions = {
       success: true,
       email,
       password,
-      errors: [],
+      errors: []
     };
 
     if (returnObject.errors.length) {
@@ -30,7 +30,7 @@ export const actions = {
 
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
-      password,
+      password
     });
 
     if (error || !data.user) {
@@ -41,6 +41,6 @@ export const actions = {
       return fail(400, returnObject as any);
     }
 
-    redirect(303, "/private/reports");
-  },
+    redirect(303, "/private/media");
+  }
 } satisfies Actions;

@@ -92,11 +92,8 @@ export class UserState {
           .eq("user_id", userId)
           .single(),
         this.supabase.from("media").select("*").eq("user_id", userId),
-        this.supabase
-          .from("media_types")
-          .select("*")
-          .eq("user_id", this.user.id),
-        this.supabase.rpc("folders_media_types_mapping"),
+        this.supabase.from("media_types").select("*"),
+        this.supabase.rpc("folders_media_types_mapping").eq("user_id", userId)
       ]);
 
     if (
@@ -110,7 +107,7 @@ export class UserState {
         userError: userResponse.error,
         mediaError: mediaResponse.error,
         mediaTypeError: mediaTypeResponse.error,
-        foldersError: foldersResponse.error,
+        foldersError: foldersResponse.error
       });
       return;
     }
@@ -127,27 +124,27 @@ export class UserState {
     mediaName: string,
     mediaFile: File,
     folderPath: string,
-    thumbNail: File,
+    thumbNail: File
   ) {
     if (!this.supabase || !this.user) {
       return;
     }
 
     const encodedFileName = encodeURIComponent(
-      `${new Date().getTime()}_${mediaName}.${mediaFile.name.split(".").pop()}`,
+      `${new Date().getTime()}_${mediaName}.${mediaFile.name.split(".").pop()}`
     );
     let filePath = `${this.user.id}/${folderPath}/${encodedFileName}`;
     let thumbNailPath = `${this.user.id}/thumbNails/${folderPath}/${new Date().getTime()}_${thumbNail.name}`;
     let [mediaResponse, thumbNailResponse] = await Promise.all([
       this.supabase.storage.from("media-lib").upload(filePath, mediaFile),
-      this.supabase.storage.from("media-lib").upload(thumbNailPath, thumbNail),
+      this.supabase.storage.from("media-lib").upload(thumbNailPath, thumbNail)
     ]);
 
     if (mediaResponse.error || thumbNailResponse.error) {
       console.error("Error uploading media");
       console.error({
         mediaError: mediaResponse.error,
-        thumbNailError: thumbNailResponse.error,
+        thumbNailError: thumbNailResponse.error
       });
       return { status: 400, error: "Error uploading media" };
     }
@@ -164,7 +161,7 @@ export class UserState {
     description: string,
     thumbNail: File,
     folderId: number,
-    folderPath: string,
+    folderPath: string
   ) {
     if (!this.supabase || !this.user) {
       return;
@@ -173,7 +170,7 @@ export class UserState {
       mediaName,
       mediaFile,
       folderPath,
-      thumbNail,
+      thumbNail
     );
 
     if (!uploadResult || uploadResult.status === 400) {
@@ -189,7 +186,7 @@ export class UserState {
       description,
       thumbnail: thumbnailUrl?.data.publicUrl || "",
       folder_id: folderId,
-      size: mediaFile.size,
+      size: mediaFile.size
     });
 
     return response;
@@ -248,7 +245,7 @@ export class UserState {
     updateObject: Partial<UpdatableMedia>,
     mediaFile: File | null,
     thumbnailFile: File | null,
-    folderPath: string | null,
+    folderPath: string | null
   ) {
     if (!this.supabase || !this.user) {
       return;
@@ -259,7 +256,7 @@ export class UserState {
         updateObject.display_name,
         mediaFile,
         folderPath,
-        thumbnailFile,
+        thumbnailFile
       );
 
       if (!uploadResult || uploadResult.status === 400) {
@@ -346,7 +343,9 @@ export class UserState {
       return;
     }
 
-    const { data, error } = await this.supabase.from("folders").select("*");
+    const { data, error } = await this.supabase
+      .rpc("folders_media_types_mapping")
+      .eq("user_id", this.user.id);
 
     if (data && data.length) {
       this.folders = generateFolderPaths(data);

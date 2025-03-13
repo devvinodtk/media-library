@@ -25,7 +25,7 @@ export const actions = {
       email,
       password,
       passwordConfirmation,
-      errors: [],
+      errors: []
     };
 
     if (name.length < 3) {
@@ -45,9 +45,9 @@ export const actions = {
       password,
       options: {
         data: {
-          display_name: name,
-        },
-      },
+          display_name: name
+        }
+      }
     });
 
     if (error || !data.user) {
@@ -57,11 +57,52 @@ export const actions = {
       }
       return fail(400, returnObject as any);
     }
-    const userId = data.user.id;
-    const { error: userNameError } = await supabase
-      .from("user_names")
-      .insert({ user_id: userId, name });
 
-    redirect(303, "/private/reports");
-  },
+    const userId = data.user.id;
+    const [userNamesResponse, foldersResponse] = await Promise.all([
+      supabase.from("user_names").insert({ user_id: userId, name }),
+      supabase.from("folders").insert([
+        {
+          folder_name: "images",
+          user_id: userId,
+          media_type_id: 1,
+          parent_folder_id: 1,
+          tag_names: "images"
+        },
+        {
+          folder_name: "videos",
+          user_id: userId,
+          media_type_id: 2,
+          parent_folder_id: 1,
+          tag_names: "videos"
+        },
+        {
+          folder_name: "audios",
+          user_id: userId,
+          media_type_id: 3,
+          parent_folder_id: 1,
+          tag_names: "audios"
+        },
+        {
+          folder_name: "documents",
+          user_id: userId,
+          media_type_id: 4,
+          parent_folder_id: 1,
+          tag_names: "documents"
+        }
+      ])
+    ]);
+
+    if (userNamesResponse.error || foldersResponse.error) {
+      console.log("Error fetching user data");
+      console.log({
+        userError: userNamesResponse.error,
+        mediaError: foldersResponse.error
+      });
+
+      return fail(400, returnObject as any);
+    }
+
+    redirect(303, "/private/media");
+  }
 } satisfies Actions;
