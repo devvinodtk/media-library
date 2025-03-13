@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { Loader } from "$components";
   type ViewMediaProps = {
     itemToView: Media;
     closeModal: any;
@@ -6,6 +7,7 @@
   import { getUserState, type Media } from "$lib/state/user-state.svelte";
   import { Button } from "flowbite-svelte";
   import { DownloadOutline } from "flowbite-svelte-icons";
+
   let userContext = getUserState();
   const { folders, user } = $derived(userContext);
   let { closeModal, itemToView }: ViewMediaProps = $props();
@@ -15,8 +17,8 @@
 
   let folderInfoForMedia = $derived.by(() =>
     folders?.find(
-      (folder) => folder.id === itemToView.folder_id && folder.media_type_name,
-    ),
+      (folder) => folder.id === itemToView.folder_id && folder.media_type_name
+    )
   );
 
   function handleError() {
@@ -33,7 +35,7 @@
     const fileFolderPath = getFolderPath(parentFolderId);
     if (fileFolderPath) {
       const response = userContext.getMediaPublicUrl(
-        `${user?.id}/${fileFolderPath}/${mediaFileName}`,
+        `${user?.id}/${fileFolderPath}/${mediaFileName}`
       );
       return response?.data.publicUrl || "";
     }
@@ -41,7 +43,7 @@
   };
 
   const mediaPublicUrl = $derived(
-    getMediaUrl(itemToView.folder_id, itemToView.name),
+    getMediaUrl(itemToView.folder_id, itemToView.name)
   );
 
   function getMediaTypeIcon(mediaType: string): string {
@@ -60,27 +62,36 @@
   }
 
   const handleFileDownload = async () => {
-    const fileName = itemToView.name;
-    const fileFolderPath = getFolderPath(itemToView.folder_id);
-    const fileDownloadPath = `${user?.id}/${fileFolderPath}/${fileName}`;
-    const response = await userContext.downloadMedia(fileDownloadPath);
+    try {
+      isLoading = true;
+      const fileName = itemToView.name;
+      const fileFolderPath = getFolderPath(itemToView.folder_id);
+      const fileDownloadPath = `${user?.id}/${fileFolderPath}/${fileName}`;
+      const response = await userContext.downloadMedia(fileDownloadPath);
 
-    if (response?.data) {
-      const url = URL.createObjectURL(response.data);
+      if (response?.data) {
+        const url = URL.createObjectURL(response.data);
 
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = decodeURI(fileName);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = decodeURI(fileName);
 
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
 
-      URL.revokeObjectURL(url);
+        URL.revokeObjectURL(url);
+      }
+    } catch (error) {
+    } finally {
+      isLoading = false;
     }
   };
 </script>
 
+{#if isLoading}
+  <Loader />
+{/if}
 <div class="media-viewer">
   <div class="media-metadata">
     <div class="file-info">

@@ -11,7 +11,7 @@ export { default as Button } from "./Common/Button.svelte";
 export { default as TagsComponent } from "./Common/TagsComponent.svelte";
 export { default as Change } from "./Common/Change.svelte";
 export { default as More } from "./Common/More.svelte";
-
+export { default as Loader } from "./Common/Loader.svelte";
 export { default as Modal } from "./Layout/Modal.svelte";
 export { default as Header } from "./Layout/Header.svelte";
 export { default as AuthForm } from "./Layout/AuthForm.svelte";

@@ -2,6 +2,7 @@
   import { Badge, Button, Helper, Input, Label, Select } from "flowbite-svelte";
   import { createForm } from "svelte-forms-lib";
   import { getUserState, type Folder } from "$lib/state/user-state.svelte";
+  import { Loader } from "$components";
 
   type FormData = {
     folderName: string;
@@ -20,6 +21,8 @@
   let inputValue = $state<String>("");
   let { closeModal, itemToEdit }: ManageFolderProps = $props();
   let isEditMode = $derived(!!itemToEdit);
+  let isLoading = $state(false);
+  let errorMessage = $state<string>("");
 
   function handleBlur(field: keyof FormData) {
     validateField(field);
@@ -39,14 +42,14 @@
         folderName: itemToEdit.folder_name,
         mediaTypeId: itemToEdit.media_type_id,
         parentFolderId: itemToEdit.parent_folder_id,
-        tagNames: parseTagNames(itemToEdit.tag_names || ""),
+        tagNames: parseTagNames(itemToEdit.tag_names || "")
       };
     }
     return {
       folderName: "",
       mediaTypeId: null,
       parentFolderId: null,
-      tagNames: [],
+      tagNames: []
     };
   };
 
@@ -68,22 +71,33 @@
       return errors;
     },
     onSubmit: async (values) => {
-      const folderObject = {
-        folder_name: values.folderName,
-        parent_folder_id: values.parentFolderId,
-        tag_names: values.tagNames.join(","),
-        media_type_id: values.mediaTypeId!,
-      };
+      try {
+        isLoading = true;
+        const folderObject = {
+          folder_name: values.folderName,
+          parent_folder_id: values.parentFolderId,
+          tag_names: values.tagNames.join(","),
+          media_type_id: values.mediaTypeId!
+        };
 
-      const response = isEditMode
-        ? await userContext.updateFolder(itemToEdit.id, folderObject)
-        : await userContext.insertNewFolder(folderObject);
-      if ((response && response?.status === 201) || response?.status === 204) {
-        closeModal();
-      } else if (response && response.status === 409) {
-        console.log(response.error);
+        const response = isEditMode
+          ? await userContext.updateFolder(itemToEdit.id, folderObject)
+          : await userContext.insertNewFolder(folderObject);
+        if (
+          (response && response?.status === 201) ||
+          response?.status === 204
+        ) {
+          closeModal();
+        } else if (response && response.status === 409) {
+          console.log(response.error);
+        }
+      } catch (error) {
+        errorMessage = "An error occurred while saving the media.";
+        console.error(error);
+      } finally {
+        isLoading = false;
       }
-    },
+    }
   });
 
   const mediaTypeOptions = $derived.by(() => {
@@ -103,7 +117,7 @@
       if (mediaFolder) {
         folderOptions.push({
           value: mediaFolder.id,
-          name: mediaFolder.folder_path ? mediaFolder.folder_path : "",
+          name: mediaFolder.folder_path ? mediaFolder.folder_path : ""
         });
       }
       folders.filter((folder) => {
@@ -112,7 +126,7 @@
           folder.media_type_id === $form.mediaTypeId &&
           folderOptions.push({
             value: folder.id,
-            name: folder.folder_path ? folder.folder_path : "",
+            name: folder.folder_path ? folder.folder_path : ""
           });
       });
     }
@@ -148,6 +162,9 @@
   };
 </script>
 
+{#if isLoading}
+  <Loader />
+{/if}
 <form onsubmit={handleSubmit}>
   <div class="grid grid-cols-6 gap-6 mb-5">
     <Label class="col-span-6 space-y-2">
@@ -228,5 +245,5 @@
       </Helper>
     </Label>
   </div>
-  <Button type="submit">{isEditMode ? "Update" : "Save"} Media</Button>
+  <Button type="submit">{isEditMode ? "Update" : "Save"} Folder</Button>
 </form>

@@ -2,7 +2,7 @@
   import {
     getUserState,
     type Media,
-    type UpdatableMedia,
+    type UpdatableMedia
   } from "$lib/state/user-state.svelte";
   import {
     Avatar,
@@ -11,17 +11,18 @@
     Input,
     Label,
     Select,
-    Textarea,
+    Textarea
   } from "flowbite-svelte";
   import { createForm } from "svelte-forms-lib";
   import {
     generatePlaceholderThumbnail,
     generateImageThumbnail,
     generatePDFThumbnails,
-    generateVideoThumbnail,
+    generateVideoThumbnail
   } from "$lib/utils/utility-functions";
   import DropZone from "svelte-file-dropzone";
   import { allowedFileTypes } from "$lib/utils/constants";
+  import { Loader } from "$components";
 
   type FormData = {
     mediaName: string;
@@ -51,7 +52,7 @@
   let thumbnailToUpload = $state<File | null>(null);
   let errorMessage = $state<string>("");
   let fileTypeError = $state<string>("");
-  let loading = $state(false);
+  let isLoading = $state(false);
 
   // Get currently selected media type info
   const getSelectedMediaTypeInfo = (mediaTypeId: number | null) => {
@@ -69,7 +70,7 @@
 
     return {
       type: mediaType,
-      ...allowedFileTypes[mediaType as keyof typeof allowedFileTypes],
+      ...allowedFileTypes[mediaType as keyof typeof allowedFileTypes]
     };
   };
 
@@ -84,7 +85,7 @@
   // Check if file is allowed for selected media type
   const isFileTypeAllowed = (
     file: File,
-    mediaTypeId: number | null,
+    mediaTypeId: number | null
   ): boolean => {
     const mediaTypeInfo = getSelectedMediaTypeInfo(mediaTypeId);
     if (!mediaTypeInfo) return false;
@@ -103,7 +104,7 @@
         parentFolderId: itemToEdit.folder_id,
         thumbnailUrl: itemToEdit.thumbnail,
         fileSize: itemToEdit.size,
-        fileName: itemToEdit.name,
+        fileName: itemToEdit.name
       };
     }
     return {
@@ -113,7 +114,7 @@
       parentFolderId: null,
       fileSize: null,
       thumbnailUrl: null,
-      fileName: "",
+      fileName: ""
     };
   };
 
@@ -137,6 +138,7 @@
     },
     onSubmit: async (values) => {
       try {
+        isLoading = true;
         if (
           fileToUpload &&
           values.mediaTypeId &&
@@ -155,8 +157,10 @@
       } catch (error) {
         errorMessage = "An error occurred while saving the media.";
         console.error(error);
+      } finally {
+        isLoading = false;
       }
-    },
+    }
   });
 
   const mediaTypeOptions = $derived.by(() => {
@@ -176,7 +180,7 @@
         folder.media_type_id === $form.mediaTypeId &&
           folderOptions.push({
             value: folder.id,
-            name: folder.folder_path ? folder.folder_path : "",
+            name: folder.folder_path ? folder.folder_path : ""
           });
       });
     }
@@ -248,7 +252,7 @@
 
   const folderPath = $derived.by(
     () =>
-      folders?.find((folder) => folder.id == $form.parentFolderId)?.folder_path,
+      folders?.find((folder) => folder.id == $form.parentFolderId)?.folder_path
   );
 
   const handleNewMediaSave = async (values: typeof $form) => {
@@ -266,7 +270,7 @@
         values.description,
         thumbnailToUpload,
         values.parentFolderId,
-        folderPath ?? null,
+        folderPath ?? null
       );
 
       if (res && res.error) {
@@ -291,7 +295,7 @@
         folder_id: values.parentFolderId || 0,
         thumbnail: values.thumbnailUrl || null,
         size: values.fileSize,
-        name: values.fileName,
+        name: values.fileName
       };
 
       const res = await userContext.updateMedia(
@@ -299,7 +303,7 @@
         media,
         fileToUpload,
         thumbnailToUpload,
-        folderPath ?? null,
+        folderPath ?? null
       );
 
       if (res && res.error) {
@@ -314,6 +318,9 @@
   };
 </script>
 
+{#if isLoading}
+  <Loader />
+{/if}
 <form onsubmit={handleSubmit}>
   <div class="grid grid-cols-6 gap-6 mb-5">
     <Label class="col-span-6 space-y-2">
