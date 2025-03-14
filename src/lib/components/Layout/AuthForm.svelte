@@ -24,7 +24,7 @@
 
 <main class={mainClass}>
   <div class={mainDivClass}>
-    <a href="/" class={siteLinkClass}>
+    <a href="/login" class={siteLinkClass}>
       <img src={mediaLibraryLogo} class={siteImgClass} alt="" />
       <span>Media Library App</span>
     </a>
