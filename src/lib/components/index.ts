@@ -2,7 +2,7 @@
 export { default as MainSection } from "./MainSection.svelte";
 export { default as ManageFolder } from "./ManageFolder.svelte";
 export { default as ManageMedia } from "./ManageMedia.svelte";
-export { default as Navbar } from "./Navbar.svelte";
+export { default as Navbar } from "./Layout/Navbar.svelte";
 export { default as Sidebar } from "./Sidebar.svelte";
 export { default as ViewMediaFile } from "./ViewMediaFile.svelte";
 
