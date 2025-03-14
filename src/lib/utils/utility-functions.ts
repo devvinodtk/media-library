@@ -2,7 +2,10 @@ import type { Folder, Media } from "$lib/state/user-state.svelte";
 import { getDocument, GlobalWorkerOptions } from "pdfjs-dist";
 
 // Set the worker source path
-GlobalWorkerOptions.workerSrc = "/src/assets/pdf.worker.min.mjs";
+// GlobalWorkerOptions.workerSrc = "/src/assets/pdf.worker.min.mjs";
+import.meta.glob("/node_modules/pdfjs-dist/build/pdf.worker.min.mjs");
+GlobalWorkerOptions.workerSrc =
+  "/node_modules/pdfjs-dist/build/pdf.worker.min.mjs";
 
 export function generateFolderPaths(folders: Folder[]) {
   const folderMap = new Map();
@@ -25,7 +28,7 @@ export function generateFolderPaths(folders: Folder[]) {
   // Generate new array with folder_path
   return folders.map((folder) => ({
     ...folder,
-    folder_path: getFolderPath(folder),
+    folder_path: getFolderPath(folder)
   }));
 }
 
@@ -85,7 +88,7 @@ export async function generateImageThumbnail(file: File): Promise<File | null> {
           const thumbnail = new File(
             [blob],
             `${new Date().getTime()}_thumbnail.png`,
-            { type: "image/png" },
+            { type: "image/png" }
           );
 
           resolve(thumbnail);
@@ -101,7 +104,7 @@ export async function generateImageThumbnail(file: File): Promise<File | null> {
 }
 
 export const generateVideoThumbnail = async (
-  file: File,
+  file: File
 ): Promise<File | null> => {
   return new Promise((resolve, reject) => {
     const url = URL.createObjectURL(file);
@@ -130,7 +133,7 @@ export const generateVideoThumbnail = async (
         const thumbnail = new File(
           [blob],
           `${new Date().getTime()}_thumbnail.png`,
-          { type: "image/png" },
+          { type: "image/png" }
         );
 
         resolve(thumbnail);
@@ -151,7 +154,7 @@ export async function generatePDFThumbnails(file: File): Promise<File | null> {
       if (e.target.result instanceof ArrayBuffer) {
         try {
           const pdf = await getDocument({
-            data: new Uint8Array(e.target.result),
+            data: new Uint8Array(e.target.result)
           }).promise;
           const page = await pdf.getPage(1);
           const viewport = page.getViewport({ scale: 0.5 });
@@ -176,7 +179,7 @@ export async function generatePDFThumbnails(file: File): Promise<File | null> {
               const thumbnailFile = new File(
                 [blob],
                 `${file.name.split(".")[0]}_thumbnail.png`,
-                { type: "image/png" },
+                { type: "image/png" }
               );
               resolve(thumbnailFile);
             } else {
@@ -198,7 +201,7 @@ export async function generatePDFThumbnails(file: File): Promise<File | null> {
 }
 
 export const generatePlaceholderThumbnail = async (
-  fileType: string,
+  fileType: string
 ): Promise<File> => {
   // This is a simplified example - in a real implementation you might want to
   // use actual icons for different file types or generate thumbnails for videos, etc.
@@ -245,7 +248,7 @@ export const getFormattedDate = (timestamp: string) => {
     formattedDate = dateObj.toLocaleDateString("en-IN", {
       year: "numeric",
       month: "2-digit",
-      day: "2-digit",
+      day: "2-digit"
     });
   }
   return formattedDate;
@@ -260,7 +263,7 @@ export const getFormattedTime = (timestamp: string) => {
       hour: "2-digit",
       minute: "2-digit",
       second: "2-digit",
-      hour12: false, // Use 24-hour format
+      hour12: false // Use 24-hour format
     });
   }
   return formattedTime;
