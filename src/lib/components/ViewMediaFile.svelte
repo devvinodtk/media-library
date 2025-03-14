@@ -218,6 +218,8 @@
     font-family: monospace;
     font-size: 0.85rem;
     padding-top: 0.75rem;
+    display: inline-block;
+    word-break: break-all;
   }
 
   .media-metadata {

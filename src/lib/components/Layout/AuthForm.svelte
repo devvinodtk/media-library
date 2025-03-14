@@ -32,6 +32,11 @@
       <h1 class={cardH1Class}>
         {`${isRegistration ? "Register" : "Login"}`} to the App
       </h1>
+      {#if form && form.errors?.length}
+        {#each form.errors as error}
+          <p class="mt-2 text-sm text-red-500">{error}</p>
+        {/each}
+      {/if}
       <form class="mt-8 space-y-6" method="POST">
         {#if isRegistration}
           <div>

@@ -11,6 +11,7 @@
     Input,
     Label,
     Select,
+    Spinner,
     Textarea
   } from "flowbite-svelte";
   import { createForm } from "svelte-forms-lib";
@@ -53,6 +54,7 @@
   let errorMessage = $state<string>("");
   let fileTypeError = $state<string>("");
   let isLoading = $state(false);
+  let isMediaProcessing = $state(false);
 
   // Get currently selected media type info
   const getSelectedMediaTypeInfo = (mediaTypeId: number | null) => {
@@ -197,32 +199,38 @@
   }
 
   const handleFileDrop = async (event: CustomEvent<any>) => {
-    const { acceptedFiles } = event.detail;
-    if (acceptedFiles.length) {
-      const file = acceptedFiles[0] as File;
+    try {
+      isMediaProcessing = true;
+      const { acceptedFiles } = event.detail;
+      if (acceptedFiles.length) {
+        const file = acceptedFiles[0] as File;
 
-      // Validate file type against selected media type
-      if ($form.mediaTypeId && !isFileTypeAllowed(file, $form.mediaTypeId)) {
-        const mediaTypeInfo = getSelectedMediaTypeInfo($form.mediaTypeId);
-        fileTypeError = `Invalid file type. Please upload ${mediaTypeInfo?.displayName.toLowerCase()} (${mediaTypeInfo?.extensions}).`;
-        return;
+        // Validate file type against selected media type
+        if ($form.mediaTypeId && !isFileTypeAllowed(file, $form.mediaTypeId)) {
+          const mediaTypeInfo = getSelectedMediaTypeInfo($form.mediaTypeId);
+          fileTypeError = `Invalid file type. Please upload ${mediaTypeInfo?.displayName.toLowerCase()} (${mediaTypeInfo?.extensions}).`;
+          return;
+        }
+
+        fileTypeError = ""; // Clear error if file is valid
+        fileToUpload = file;
+
+        // Only generate thumbnail for images; for other types, create a default thumbnail based on type
+        if (file.type.startsWith("image/")) {
+          thumbnailToUpload = await generateImageThumbnail(fileToUpload);
+        } else if (file.type.includes("application/pdf")) {
+          thumbnailToUpload = await generatePDFThumbnails(fileToUpload);
+        } else if (file.type.startsWith("video/")) {
+          thumbnailToUpload = await generateVideoThumbnail(fileToUpload);
+        } else {
+          //
+          // For other types use placeholder thumbnails based on file type
+          thumbnailToUpload = await generatePlaceholderThumbnail(file.type);
+        }
       }
-
-      fileTypeError = ""; // Clear error if file is valid
-      fileToUpload = file;
-
-      // Only generate thumbnail for images; for other types, create a default thumbnail based on type
-      if (file.type.startsWith("image/")) {
-        thumbnailToUpload = await generateImageThumbnail(fileToUpload);
-      } else if (file.type.includes("application/pdf")) {
-        thumbnailToUpload = await generatePDFThumbnails(fileToUpload);
-      } else if (file.type.startsWith("video/")) {
-        thumbnailToUpload = await generateVideoThumbnail(fileToUpload);
-      } else {
-        //
-        // For other types use placeholder thumbnails based on file type
-        thumbnailToUpload = await generatePlaceholderThumbnail(file.type);
-      }
+    } catch (err) {
+    } finally {
+      isMediaProcessing = false;
     }
   };
 
@@ -493,5 +501,11 @@
     </div>
   {/if}
 
-  <Button type="submit">{isEditMode ? "Update" : "Save"} Media</Button>
+  <Button disabled={isMediaProcessing} type="submit">
+    {#if isMediaProcessing}
+      <Spinner class="me-3" size="4" color="white" /> Processing ...
+    {:else}
+      {isEditMode ? "Update" : "Save"} Media
+    {/if}
+  </Button>
 </form>
