@@ -206,6 +206,7 @@
     <Label class="col-span-6 space-y-2">
       <span>Select parent folder</span>
       <Select
+        disabled={itemToEdit.parent_folder_id === 1}
         id="parentFolderId"
         name="parentFolderId"
         items={folderOptions}

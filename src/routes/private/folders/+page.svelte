@@ -212,6 +212,8 @@
       lastFilterColumn = filterColumn;
     }
   });
+
+  $inspect(folders);
 </script>
 
 <main class="relative h-full w-full overflow-y-aut dark:bg-gray-800 p-4">
@@ -334,6 +336,7 @@
               <TableBodyCell>
                 {#if item.id !== 1}
                   <button
+                    title="Delete"
                     onclick={() => {
                       openModal = true;
                       itemToEdit = item;
@@ -345,7 +348,7 @@
                   >
 
                   <button
-                    disabled={filesPerFolders(item.id).length > 0}
+                    disabled={true}
                     id={`delete_${item.id}`}
                     title="Delete"
                     onclick={() => {

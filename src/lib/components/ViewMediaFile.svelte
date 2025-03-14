@@ -229,25 +229,6 @@
   .media-type-icon {
     font-size: 1.2rem;
   }
-
-  .download-button {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.6rem 1rem;
-    color: white;
-    text-decoration: none;
-    transition: background-color 0.2s;
-  }
-
-  .download-button:hover {
-    background-color: #45a049;
-  }
-
-  .download-icon {
-    font-size: 1.2rem;
-  }
-
   .media-container {
     max-width: 100%;
     max-height: 60vh;
@@ -294,14 +275,6 @@
     width: 100%;
   }
 
-  iframe {
-    width: 100%;
-    height: 60vh;
-    border: none;
-    border-radius: 4px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  }
-
   .document-viewer {
     width: 100%;
     max-width: 500px;
@@ -326,11 +299,6 @@
     .media-metadata {
       flex-direction: column;
       align-items: flex-start;
-    }
-
-    .download-button {
-      align-self: stretch;
-      justify-content: center;
     }
   }
 </style>

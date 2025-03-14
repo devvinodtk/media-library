@@ -354,6 +354,7 @@
     <Label class="col-span-6 space-y-2">
       <span>Select media type</span>
       <Select
+        disabled={isEditMode}
         id="mediaTypeId"
         name="mediaTypeId"
         items={mediaTypeOptions}
@@ -373,6 +374,7 @@
     <Label class="col-span-6 space-y-2">
       <span>Select parent folder</span>
       <Select
+        disabled={isEditMode}
         id="parentFolderId"
         name="parentFolderId"
         items={folderOptions}
@@ -386,8 +388,26 @@
         </Helper>
       {/if}
     </Label>
-
-    {#if !isEditMode || (isEditMode && !fileToUpload)}
+    {#if fileToUpload}
+      <div class="col-span-6 space-y-2 sm:col-span-4">
+        <p class="text-sm text-gray-600">
+          Current file: {fileToUpload?.name}
+        </p>
+        {#if currentMediaTypeInfo}
+          <p class="text-xs text-gray-600">
+            File type: {currentMediaTypeInfo.displayName}
+          </p>
+        {/if}
+        <Button
+          type="button"
+          size="sm"
+          color="light"
+          on:click={() => ((fileToUpload = null), (thumbnailToUpload = null))}
+        >
+          Change File
+        </Button>
+      </div>
+    {:else if !isEditMode || (isEditMode && !fileToUpload)}
       <DropZone
         disabled={!$form.mediaTypeId}
         on:drop={handleFileDrop}
@@ -409,15 +429,18 @@
               clip-rule="evenodd"
             />
           </svg>
+
           <div class="mt-4 flex text-sm/6 text-gray-600">
-            <label
-              for="file-upload"
-              class="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 focus-within:outline-hidden hover:text-indigo-500"
-            >
-              <span>{`${fileToUpload ? "different" : "Upload a file"} `}</span>
-            </label>
-            <p class="pl-1">or drag and drop</p>
+            {#if currentMediaTypeInfo}
+              <label
+                for="file-upload"
+                class="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 focus-within:outline-hidden hover:text-indigo-500"
+              >
+                <span>Upload a file / Drag and drop a file</span>
+              </label>
+            {/if}
           </div>
+
           {#if currentMediaTypeInfo}
             <div class="mt-1">
               <p class="text-xs/5 font-medium text-indigo-600">
@@ -435,25 +458,7 @@
           {/if}
         </div>
       </DropZone>
-    {:else}
-      <div class="col-span-6 space-y-2 sm:col-span-4">
-        <p class="text-sm text-gray-600">Current file: {fileToUpload?.name}</p>
-        {#if currentMediaTypeInfo}
-          <p class="text-xs text-gray-600">
-            File type: {currentMediaTypeInfo.displayName}
-          </p>
-        {/if}
-        <Button
-          type="button"
-          size="sm"
-          color="light"
-          on:click={() => (fileToUpload = null)}
-        >
-          Change File
-        </Button>
-      </div>
     {/if}
-
     {#if fileTypeError}
       <div class="col-span-6">
         <Helper color="red">

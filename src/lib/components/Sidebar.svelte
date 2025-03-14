@@ -3,12 +3,12 @@
     Sidebar,
     SidebarGroup,
     SidebarItem,
-    SidebarWrapper,
+    SidebarWrapper
   } from "flowbite-svelte";
   import {
     FileCloneOutline,
     FolderDuplicateOutline,
-    RectangleListOutline,
+    RectangleListOutline
   } from "flowbite-svelte-icons";
 
   let { drawerHidden = $bindable() } = $props();
@@ -22,9 +22,9 @@
     {
       name: "Folders",
       icon: FolderDuplicateOutline,
-      href: "/private/folders",
+      href: "/private/folders"
     },
-    { name: "Reports", icon: RectangleListOutline, href: "/private/reports" },
+    { name: "Reports", icon: RectangleListOutline, href: "/private/reports" }
   ];
   let iconClass =
     "flex-shrink-0 w-6 h-6 mx-3 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white";
@@ -44,14 +44,14 @@
   >
     <nav class="divide-y divide-gray-200 dark:divide-gray-700">
       <SidebarGroup ulClass={groupClass} class="mb-3">
-        {#each posts as { name, icon, href } (name)}
+        {#each posts as { name, icon: Icon, href } (name)}
           <SidebarItem
             label={name}
             {href}
             spanClass="m-2 font-thin"
             class={itemClass}
           >
-            <svelte:component this={icon} slot="icon" class={iconClass} />
+            <Icon slot="icon" class={iconClass} />
           </SidebarItem>
         {/each}
       </SidebarGroup>

@@ -1,14 +1,7 @@
 <script lang="ts">
-  import { Stats } from "$components";
-  import {
-    getUserState,
-    type Folder,
-    type Media
-  } from "$lib/state/user-state.svelte";
-  import { mediaTableColumns } from "$lib/utils/constants";
+  import { getUserState, type Media } from "$lib/state/user-state.svelte";
   import { formatBytes, sortedItemsBySize } from "$lib/utils/utility-functions";
   import {
-    A,
     Button,
     Heading,
     Table,
@@ -16,34 +9,44 @@
     TableBodyCell,
     TableBodyRow,
     TableHead,
-    TableHeadCell
+    TableHeadCell,
+    Spinner
   } from "flowbite-svelte";
   import { DownloadOutline } from "flowbite-svelte-icons";
   let userContext = getUserState();
   let { media, folders, user } = $derived(userContext);
+  let isZipLoading = $state(false);
+  let isCSVLoading = $state(false);
 
   const getFolderPath = (parentFolderId: number) =>
     folders?.find((folder) => folder.id == parentFolderId)?.folder_path;
 
   const handleDownloadFilesReport = async () => {
-    const filePath: string[] = [];
-    media?.forEach((file) => {
-      const createdDate = new Date(file.created_at);
-      const today = new Date();
+    try {
+      isZipLoading = true;
+      const filePath: string[] = [];
+      media?.forEach((file) => {
+        const createdDate = new Date(file.created_at);
+        const today = new Date();
 
-      const sevenDaysAgo = new Date();
-      sevenDaysAgo.setDate(today.getDate() - 7);
+        const sevenDaysAgo = new Date();
+        sevenDaysAgo.setDate(today.getDate() - 7);
 
-      if (createdDate >= sevenDaysAgo) {
-        const fileFolderPath = getFolderPath(file.folder_id);
-        if (fileFolderPath) {
-          filePath.push(`${user?.id}/${fileFolderPath}/${file.name}`);
+        if (createdDate >= sevenDaysAgo) {
+          const fileFolderPath = getFolderPath(file.folder_id);
+          if (fileFolderPath) {
+            filePath.push(`${user?.id}/${fileFolderPath}/${file.name}`);
+          }
         }
-      }
-    });
+      });
 
-    if (filePath?.length) {
-      const media = await userContext.downloadFilesAsZip(filePath);
+      if (filePath?.length) {
+        await userContext.downloadFilesAsZip(filePath);
+      }
+    } catch (error) {
+      console.error("Error downloading one week media report", error);
+    } finally {
+      isZipLoading = false;
     }
   };
 
@@ -91,23 +94,29 @@
     if (!media) {
       return;
     }
+    try {
+      isCSVLoading = true;
+      const csvContent: string = exportMediaListToCsv(sortedItemsBySize(media));
 
-    const csvContent: string = exportMediaListToCsv(sortedItemsBySize(media));
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
 
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute(
+        "download",
+        `media-list-${new Date().toISOString().split("T")[0]}.csv`
+      );
+      link.style.visibility = "hidden";
 
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.setAttribute("href", url);
-    link.setAttribute(
-      "download",
-      `media-list-${new Date().toISOString().split("T")[0]}.csv`
-    );
-    link.style.visibility = "hidden";
-
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error("Error downloading csv report", error);
+    } finally {
+      isCSVLoading = false;
+    }
   };
 </script>
 
@@ -139,21 +148,29 @@
           >
           <TableBodyCell>
             <Button size="sm" on:click={handleDownloadFilesReport}>
-              <DownloadOutline class="w-5 h-5 me-2" />Download</Button
-            >
+              {#if isZipLoading}
+                <Spinner class="me-3" size="4" color="white" /> Downloading ...
+              {:else}
+                <DownloadOutline class="w-5 h-5 me-2" />Download
+              {/if}
+            </Button>
           </TableBodyCell>
         </TableBodyRow>
         <TableBodyRow>
           <TableBodyCell>Large Media</TableBodyCell>
-          <TableBodyCell
-            >This report provides a view of media by its size in descending
-            order.</TableBodyCell
-          >
-          <TableBodyCell
-            ><Button size="sm" on:click={handleDownloadLargeMediaReport}
-              ><DownloadOutline class="w-5 h-5 me-2" /> Download</Button
-            ></TableBodyCell
-          >
+          <TableBodyCell>
+            This report provides a view of media by its size in descending
+            order.
+          </TableBodyCell>
+          <TableBodyCell>
+            <Button size="sm" on:click={handleDownloadLargeMediaReport}>
+              {#if isCSVLoading}
+                <Spinner class="me-3" size="4" color="white" /> Downloading ...
+              {:else}
+                <DownloadOutline class="w-5 h-5 me-2" /> Download
+              {/if}
+            </Button>
+          </TableBodyCell>
         </TableBodyRow>
       </TableBody>
     </Table>
