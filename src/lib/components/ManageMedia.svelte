@@ -211,6 +211,8 @@
       fileTypeError = ""; // Clear error if file is valid
       fileToUpload = file;
 
+      console.log(file.type);
+
       // Only generate thumbnail for images; for other types, create a default thumbnail based on type
       if (file.type.startsWith("image/")) {
         thumbnailToUpload = await generateImageThumbnail(fileToUpload);
