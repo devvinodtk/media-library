@@ -81,7 +81,7 @@
         };
 
         const response = isEditMode
-          ? await userContext.updateFolder(itemToEdit.id, folderObject)
+          ? await userContext.updateFolder(itemToEdit?.id, folderObject)
           : await userContext.insertNewFolder(folderObject);
         if (
           (response && response?.status === 201) ||
@@ -190,7 +190,7 @@
     <Label class="col-span-6 space-y-2">
       <span>Select media type</span>
       <Select
-        disabled={!!filesPerFolders(itemToEdit.id).length ||
+        disabled={!!filesPerFolders(itemToEdit?.id).length ||
           itemToEdit?.parent_folder_id === 1}
         id="mediaTypeId"
         name="mediaTypeId"
@@ -211,7 +211,7 @@
     <Label class="col-span-6 space-y-2">
       <span>Select parent folder</span>
       <Select
-        disabled={!!filesPerFolders(itemToEdit.id).length ||
+        disabled={!!filesPerFolders(itemToEdit?.id).length ||
           itemToEdit?.parent_folder_id === 1}
         id="parentFolderId"
         name="parentFolderId"

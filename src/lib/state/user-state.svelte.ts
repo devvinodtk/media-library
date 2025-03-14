@@ -114,7 +114,9 @@ export class UserState {
 
     this.userName = userResponse.data?.name;
     this.media = mediaResponse.data;
-    this.mediaTypes = mediaTypeResponse.data;
+    this.mediaTypes = mediaTypeResponse.data.filter(
+      (mediaType) => mediaType.id !== 5
+    );
     if (foldersResponse.data && foldersResponse.data.length) {
       this.folders = generateFolderPaths(foldersResponse.data);
     }
