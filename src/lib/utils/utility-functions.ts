@@ -1,11 +1,9 @@
 import type { Folder, Media } from "$lib/state/user-state.svelte";
 import { getDocument, GlobalWorkerOptions } from "pdfjs-dist";
+import PDFWorker from "pdfjs-dist/build/pdf.worker.min.mjs?url";
 
 // Set the worker source path
-// GlobalWorkerOptions.workerSrc = "/src/assets/pdf.worker.min.mjs";
-import.meta.glob("/node_modules/pdfjs-dist/build/pdf.worker.min.mjs");
-GlobalWorkerOptions.workerSrc =
-  "/node_modules/pdfjs-dist/build/pdf.worker.min.mjs";
+GlobalWorkerOptions.workerSrc = PDFWorker;
 
 export function generateFolderPaths(folders: Folder[]) {
   const folderMap = new Map();
