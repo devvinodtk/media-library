@@ -324,9 +324,11 @@
     </div>
 
     <Table shadow hoverable={true}>
-      <TableHead>
+      <TableHead
+        class="border-y border-gray-200 bg-gray-100 dark:border-gray-700"
+      >
         {#each mediaTableColumns as column}
-          <TableHeadCell>
+          <TableHeadCell class="p-4">
             {#if column.sortable}
               <button
                 class="flex items-center"
@@ -368,7 +370,10 @@
               <TableBodyCell>{item.display_name}</TableBodyCell>
               <TableBodyCell>{getMediaType(item.folder_id)}</TableBodyCell>
               <TableBodyCell>{getFolderPath(item.folder_id)}</TableBodyCell>
-              <TableBodyCell>{item.description}</TableBodyCell>
+              <TableBodyCell
+                class="max-w-sm overflow-hidden truncate p-4 font-normal text-gray-500 dark:text-gray-400 xl:max-w-xs"
+                >{item.description}</TableBodyCell
+              >
               <TableBodyCell>
                 {#each getTagNames(item.folder_id)?.split(",") ?? [] as tagName}
                   <Badge class="mr-2" color="dark">{tagName}</Badge>

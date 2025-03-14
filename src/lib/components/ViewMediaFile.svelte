@@ -100,53 +100,61 @@
   <Loader />
 {/if}
 <div class="media-viewer">
-  <div class="media-metadata">
-    <div class="file-info">
-      <div class="info-item">
-        <span class="label">File Name:</span>
-        <span class="value">{itemToView.display_name}</span>
-      </div>
+  <div class="info-container">
+    <div class="media-metadata">
+      <div class="file-info">
+        <div class="info-item">
+          <span class="label">File Name:</span>
+          <span class="value">{itemToView.display_name}</span>
+        </div>
 
-      <div class="info-item">
-        <span class="label">Type:</span>
-        <span class="value">
-          <span class="media-type-icon"
-            >{getMediaTypeIcon(folderInfoForMedia?.media_type_name ?? "")}</span
-          >
-          {folderInfoForMedia?.media_type_name}
-        </span>
-      </div>
-
-      <div class="info-item">
-        <span class="label">Tags:</span>
-        <span class="value">
-          <span class="media-type-icon">
-            {#if tagNames}
-              {#each tagNames?.split(",") as tagName}
-                <Badge class="mr-2" color="red">{tagName}</Badge>
-              {/each}
-            {/if}
+        <div class="info-item">
+          <span class="label">Type:</span>
+          <span class="value">
+            <span class="media-type-icon"
+              >{getMediaTypeIcon(
+                folderInfoForMedia?.media_type_name ?? ""
+              )}</span
+            >
+            {folderInfoForMedia?.media_type_name}
           </span>
-        </span>
+        </div>
+
+        {#if tagNames}
+          <div class="info-item">
+            <span class="label">Tags:</span>
+            <span class="value">
+              <span class="media-type-icon">
+                {#each tagNames?.split(",") as tagName}
+                  <Badge class="mr-2" color="red">{tagName}</Badge>
+                {/each}
+              </span>
+            </span>
+          </div>
+        {/if}
+
+        <div class="info-item file-path">
+          <span class="label">Path:</span>
+          <span class="value path-value"
+            >{getFolderPath(itemToView.folder_id) || "N/A"}</span
+          >
+        </div>
       </div>
 
-      <div class="info-item file-path">
-        <span class="label">Path:</span>
-        <span class="value path-value"
-          >{getFolderPath(itemToView.folder_id) || "N/A"}</span
-        >
-      </div>
+      <Button
+        size="md"
+        on:click={handleFileDownload}
+        class="download-button"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <DownloadOutline class="w-5 h-5 me-2" /> Download File
+      </Button>
     </div>
-
-    <Button
-      size="md"
-      on:click={handleFileDownload}
-      class="download-button"
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      <DownloadOutline class="w-5 h-5 me-2" /> Download File
-    </Button>
+    <div class="media-description w-full">
+      <span class="label">Description:</span>
+      <span class="value file-description">{itemToView.description}</span>
+    </div>
   </div>
   {#if isLoading}
     <div class="loading">Loading...</div>
@@ -199,15 +207,31 @@
     gap: 1rem;
   }
 
+  .info-container {
+    display: flex;
+    border-radius: 4px;
+    flex-direction: column;
+    background-color: #f8f9fa;
+  }
+
+  .file-description {
+    font-family: monospace;
+    font-size: 0.85rem;
+    padding-top: 0.75rem;
+  }
+
   .media-metadata {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 0.75rem;
-    background-color: #f8f9fa;
-    border-radius: 4px;
+
     flex-wrap: wrap;
     gap: 1rem;
+  }
+
+  .media-description {
+    padding: 0.75rem;
   }
 
   .file-info {

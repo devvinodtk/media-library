@@ -302,9 +302,11 @@
     </div>
 
     <Table shadow hoverable={true}>
-      <TableHead>
+      <TableHead
+        class="border-y border-gray-200 bg-gray-100 dark:border-gray-700"
+      >
         {#each folderTableColumns as column}
-          <TableHeadCell>
+          <TableHeadCell class="p-4">
             {#if column.sortable}
               <button
                 class="flex items-center"
@@ -327,12 +329,14 @@
       {#if folders}
         <TableBody tableBodyClass="divide-y">
           {#each paginatedData as item (item)}
-            <TableBodyRow>
+            <TableBodyRow class="font-medium">
               <TableBodyCell
                 >{item.folder_name}
-                {filesPerFolders(item.id).length
-                  ? `(${filesPerFolders(item.id).length} Files)`
-                  : ""}
+                <div class="font-thin text-gray-500 dark:text-gray-400">
+                  {filesPerFolders(item.id).length
+                    ? `(${filesPerFolders(item.id).length} Files)`
+                    : ""}
+                </div>
               </TableBodyCell>
               <TableBodyCell
                 >{item.parent_folder_id &&
