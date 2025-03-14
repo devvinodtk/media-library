@@ -50,6 +50,7 @@
             {href}
             spanClass="m-2 font-thin"
             class={itemClass}
+            on:click={closeDrawer}
           >
             <Icon slot="icon" class={iconClass} />
           </SidebarItem>
