@@ -75,11 +75,18 @@ const authGuard: Handle = async ({ event, resolve }) => {
   event.locals.session = session;
   event.locals.user = user;
 
-  if (event.url.pathname === "/") {
+  if (!session && event.url.pathname === "/") {
     return new Response(null, {
       status: 302,
       headers: {
         location: "/login"
+      }
+    });
+  } else if (session && event.url.pathname === "/") {
+    return new Response(null, {
+      status: 302,
+      headers: {
+        location: "/media"
       }
     });
   }
