@@ -34,6 +34,9 @@
   );
   let modalHeading = $state<string>("");
 
+  const getFolderPath = (parentFolderId: number) =>
+    folders?.find((folder) => folder.id == parentFolderId)?.folder_path;
+
   export const folderTableColumns = [
     {
       id: "folderName",
@@ -43,14 +46,15 @@
     },
     {
       id: "parentFolder",
-      label: "Parent Folder Name",
-      accessor: (item: Folder) => item.parent_folder_name,
+      label: "Folder Path",
+      accessor: (item: Folder) =>
+        item.parent_folder_id && getFolderPath(item.parent_folder_id),
       sortable: true
     },
     {
       id: "mediaType",
       label: "Media Type",
-      accessor: (item: Folder) => getMediaType(item.id), // Replace with actual media type when available
+      accessor: (item: Folder) => getMediaType(item.id),
       sortable: true
     },
     {
@@ -204,6 +208,14 @@
     }
   }
 
+  const showTitleForDelete = (item: Folder) => {
+    if (item.parent_folder_id === 1) {
+      return "Can't delete root folder";
+    }
+    if (filesPerFolders(item.id).length > 0) {
+      return "Can't delete folder with files";
+    } else return "Delete";
+  };
   $effect(() => {
     // Only reset pagination when these values actually change
     if (searchTerm !== lastSearchTerm || filterColumn !== lastFilterColumn) {
@@ -212,8 +224,6 @@
       lastFilterColumn = filterColumn;
     }
   });
-
-  $inspect(folders);
 </script>
 
 <main class="relative h-full w-full overflow-y-aut dark:bg-gray-800 p-4">
@@ -320,11 +330,14 @@
             <TableBodyRow>
               <TableBodyCell
                 >{item.folder_name}
-                {filesPerFolders(item.id).length > 0
+                {filesPerFolders(item.id).length
                   ? `(${filesPerFolders(item.id).length} Files)`
                   : ""}
               </TableBodyCell>
-              <TableBodyCell>{item.parent_folder_name}</TableBodyCell>
+              <TableBodyCell
+                >{item.parent_folder_id &&
+                  getFolderPath(item.parent_folder_id)}</TableBodyCell
+              >
               <TableBodyCell>{item.media_type_name}</TableBodyCell>
               <TableBodyCell>
                 {#if item.tag_names}
@@ -336,7 +349,7 @@
               <TableBodyCell>
                 {#if item.id !== 1}
                   <button
-                    title="Delete"
+                    title="Edit"
                     onclick={() => {
                       openModal = true;
                       itemToEdit = item;
@@ -348,9 +361,10 @@
                   >
 
                   <button
-                    disabled={true}
+                    disabled={filesPerFolders(item.id).length > 0 ||
+                      item.parent_folder_id === 1}
                     id={`delete_${item.id}`}
-                    title="Delete"
+                    title={showTitleForDelete(item)}
                     onclick={() => {
                       openModal = true;
                       modalHeading = "Delete Folder";
@@ -359,8 +373,8 @@
                     }}
                     class="font-medium text-primary-600 hover:underline dark:text-primary-500"
                     ><TrashBinOutline
-                      cursor={`${filesPerFolders(item.id).length > 0 ? "not-allowed" : "pointer"}`}
-                      color={`${filesPerFolders(item.id).length > 0 ? "gray" : ""}`}
+                      cursor={`${filesPerFolders(item.id).length > 0 || item.parent_folder_id === 1 ? "not-allowed" : "pointer"}`}
+                      color={`${filesPerFolders(item.id).length > 0 || item.parent_folder_id === 1 ? "gray" : ""}`}
                     /></button
                   >
                 {/if}

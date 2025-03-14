@@ -5,7 +5,7 @@
     closeModal: any;
   };
   import { getUserState, type Media } from "$lib/state/user-state.svelte";
-  import { Button } from "flowbite-svelte";
+  import { Badge, Button } from "flowbite-svelte";
   import { DownloadOutline } from "flowbite-svelte-icons";
 
   let userContext = getUserState();
@@ -31,6 +31,9 @@
   const getFolderPath = (parentFolderId: number) =>
     folders?.find((folder) => folder.id == parentFolderId)?.folder_path;
 
+  const getTagNames = (folderId: number) =>
+    folders?.find((folder) => folder.id === folderId)?.tag_names;
+
   const getMediaUrl = (parentFolderId: number, mediaFileName: string) => {
     const fileFolderPath = getFolderPath(parentFolderId);
     if (fileFolderPath) {
@@ -44,6 +47,10 @@
 
   const mediaPublicUrl = $derived(
     getMediaUrl(itemToView.folder_id, itemToView.name)
+  );
+
+  const tagNames = $derived.by(
+    () => folderInfoForMedia?.id && getTagNames(folderInfoForMedia.id)
   );
 
   function getMediaTypeIcon(mediaType: string): string {
@@ -107,6 +114,19 @@
             >{getMediaTypeIcon(folderInfoForMedia?.media_type_name ?? "")}</span
           >
           {folderInfoForMedia?.media_type_name}
+        </span>
+      </div>
+
+      <div class="info-item">
+        <span class="label">Tags:</span>
+        <span class="value">
+          <span class="media-type-icon">
+            {#if tagNames}
+              {#each tagNames?.split(",") as tagName}
+                <Badge class="mr-2" color="red">{tagName}</Badge>
+              {/each}
+            {/if}
+          </span>
         </span>
       </div>
 

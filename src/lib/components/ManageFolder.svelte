@@ -17,7 +17,7 @@
   };
 
   let userContext = getUserState();
-  const { mediaTypes, folders } = $derived(userContext);
+  const { mediaTypes, folders, media } = $derived(userContext);
   let inputValue = $state<String>("");
   let { closeModal, itemToEdit }: ManageFolderProps = $props();
   let isEditMode = $derived(!!itemToEdit);
@@ -160,6 +160,10 @@
       inputValue = "";
     }
   };
+
+  let filesPerFolders = (folderId: number) => {
+    return media?.filter((file) => file.folder_id === folderId) ?? [];
+  };
 </script>
 
 {#if isLoading}
@@ -175,7 +179,6 @@
         class="border outline-none"
         bind:value={$form.folderName}
         on:blur={() => handleBlur("folderName")}
-        color={$errors.folderName ? "red" : "base"}
       />
       {#if $errors.folderName}
         <Helper class="mt-2" color="red">
@@ -187,6 +190,8 @@
     <Label class="col-span-6 space-y-2">
       <span>Select media type</span>
       <Select
+        disabled={!!filesPerFolders(itemToEdit.id).length ||
+          itemToEdit?.parent_folder_id === 1}
         id="mediaTypeId"
         name="mediaTypeId"
         items={mediaTypeOptions}
@@ -206,7 +211,8 @@
     <Label class="col-span-6 space-y-2">
       <span>Select parent folder</span>
       <Select
-        disabled={itemToEdit.parent_folder_id === 1}
+        disabled={!!filesPerFolders(itemToEdit.id).length ||
+          itemToEdit?.parent_folder_id === 1}
         id="parentFolderId"
         name="parentFolderId"
         items={folderOptions}

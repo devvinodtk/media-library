@@ -3,6 +3,7 @@
   import type { Media } from "$lib/state/user-state.svelte";
   import {
     Avatar,
+    Badge,
     Button,
     Heading,
     Input,
@@ -66,6 +67,12 @@
       sortable: true
     },
     {
+      id: "tagNames",
+      label: "Tags",
+      accessor: (item: Media) => getTagNames(item.folder_id),
+      sortable: true
+    },
+    {
       id: "actions",
       label: "",
       accessor: (item: Media) => "",
@@ -89,10 +96,13 @@
   let pageSizeOptions = [5, 10, 25, 50, 100];
 
   const getFolderPath = (parentFolderId: number) =>
-    folders?.find((folder) => folder.id == parentFolderId)?.folder_path;
+    folders?.find((folder) => folder.id === parentFolderId)?.folder_path;
 
   const getMediaType = (parentFolderId: number) =>
-    folders?.find((folder) => folder.id == parentFolderId)?.media_type_name;
+    folders?.find((folder) => folder.id === parentFolderId)?.media_type_name;
+
+  const getTagNames = (folderId: number) =>
+    folders?.find((folder) => folder.id === folderId)?.tag_names;
 
   function getFilteredMedia() {
     if (!media) return [];
@@ -359,6 +369,11 @@
               <TableBodyCell>{getMediaType(item.folder_id)}</TableBodyCell>
               <TableBodyCell>{getFolderPath(item.folder_id)}</TableBodyCell>
               <TableBodyCell>{item.description}</TableBodyCell>
+              <TableBodyCell>
+                {#each getTagNames(item.folder_id)?.split(",") ?? [] as tagName}
+                  <Badge class="mr-2" color="dark">{tagName}</Badge>
+                {/each}
+              </TableBodyCell>
               <TableBodyCell>
                 <button
                   onclick={() => {
