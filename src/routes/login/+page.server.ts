@@ -41,6 +41,6 @@ export const actions = {
       return fail(400, returnObject as any);
     }
 
-    redirect(303, "/private/media");
+    redirect(303, "/media");
   }
 } satisfies Actions;

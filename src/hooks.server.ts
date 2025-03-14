@@ -5,7 +5,7 @@ import type { Database } from "$lib/types/database.types";
 
 import {
   PUBLIC_SUPABASE_URL,
-  PUBLIC_SUPABASE_ANON_KEY,
+  PUBLIC_SUPABASE_ANON_KEY
 } from "$env/static/public";
 
 const supabase: Handle = async ({ event, resolve }) => {
@@ -29,9 +29,9 @@ const supabase: Handle = async ({ event, resolve }) => {
           cookiesToSet.forEach(({ name, value, options }) => {
             event.cookies.set(name, value, { ...options, path: "/" });
           });
-        },
-      },
-    },
+        }
+      }
+    }
   );
 
   /**
@@ -41,7 +41,7 @@ const supabase: Handle = async ({ event, resolve }) => {
    */
   event.locals.safeGetSession = async () => {
     const {
-      data: { session },
+      data: { session }
     } = await event.locals.supabase.auth.getSession();
     if (!session) {
       return { session: null, user: null };
@@ -49,7 +49,7 @@ const supabase: Handle = async ({ event, resolve }) => {
 
     const {
       data: { user },
-      error,
+      error
     } = await event.locals.supabase.auth.getUser();
     if (error) {
       // JWT validation has failed
@@ -66,7 +66,7 @@ const supabase: Handle = async ({ event, resolve }) => {
        * headers, so we need to tell SvelteKit to pass it through.
        */
       return name === "content-range" || name === "x-supabase-api-version";
-    },
+    }
   });
 };
 
@@ -75,15 +75,27 @@ const authGuard: Handle = async ({ event, resolve }) => {
   event.locals.session = session;
   event.locals.user = user;
 
-  if (!event.locals.session && event.url.pathname.startsWith("/private")) {
-    redirect(303, "/login");
+  if (event.url.pathname === "/") {
+    return new Response(null, {
+      status: 302,
+      headers: {
+        location: "/login"
+      }
+    });
   }
 
-  if (
-    event.locals.session &&
-    ["/register", "/login"].includes(event.url.pathname)
-  ) {
-    redirect(303, "/private/reports");
+  const protectedRoutes = ["/media", "/folders", "/reports"];
+
+  if (protectedRoutes.some((route) => event.url.pathname.startsWith(route))) {
+    // If no session exists, redirect to login
+    if (!session) {
+      return new Response(null, {
+        status: 302,
+        headers: {
+          location: `/login?redirectTo=${encodeURIComponent(event.url.pathname)}`
+        }
+      });
+    }
   }
 
   return resolve(event);

@@ -4,11 +4,11 @@
   import {
     getUserState,
     type Folder,
-    type Media,
+    type Media
   } from "$lib/state/user-state.svelte";
   import {
     getFormattedDate,
-    getFormattedTime,
+    getFormattedTime
   } from "$lib/utils/utility-functions";
   let userContext = getUserState();
   let { media, folders, user } = $derived(userContext);
@@ -18,9 +18,9 @@
       ?.filter((file) => file.created_at)
       .sort(
         (a, z) =>
-          new Date(z.created_at).getTime() - new Date(a.created_at).getTime(),
+          new Date(z.created_at).getTime() - new Date(a.created_at).getTime()
       )
-      .slice(0, 5),
+      .slice(0, 5)
   );
 
   const tagNamesForMedia = (folderId: number) =>
@@ -108,6 +108,6 @@
   <div
     class="mt-4 flex items-center justify-between border-t border-gray-200 pt-3 dark:border-gray-700 sm:pt-6"
   >
-    <More title="Full Report" href="/private/media" />
+    <More title="Full Report" href="/media" />
   </div>
 </Card>
